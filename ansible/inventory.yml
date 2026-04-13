@@ -1,0 +1,17 @@
+all:
+  hosts:
+    docker:
+      ansible_user: root
+      ansible_host: localhost
+      ansible_connection: local
+      ansible_python_interpreter: /usr/bin/python3
+      prefix_path: /opt/spear
+      is_pipeline: true
+
+    dummy_device:
+      ansible_user: spear
+      ansible_host: xxx.xxx.xxx.xxx
+      ansible_connection: ssh
+      ansible_python_interpreter: /usr/bin/python3
+      prefix_path: /opt/spear
+      is_pipeline: false

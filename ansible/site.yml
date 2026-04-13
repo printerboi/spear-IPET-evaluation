@@ -1,0 +1,9 @@
+---
+- name: SPEAR Ansible Setup
+  hosts: all
+  vars:
+    prefix_path: /opt/spear
+  roles:
+    - dependencies
+    - spear
+    - misc
