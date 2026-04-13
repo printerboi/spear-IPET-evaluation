@@ -2,7 +2,7 @@
 - name: SPEAR Ansible Setup
   hosts: all
   vars:
-    prefix_path: /opt/spear
+    prefix_path: /opt/sse-labs
   roles:
     - dependencies
     - spear

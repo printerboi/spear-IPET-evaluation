@@ -1,0 +1,33 @@
+##################################
+#
+# Dependencies Ansible playbook
+#
+##################################
+
+
+# INSTALL SYSTEM PACKAGES
+- name: Install system packages
+  apt:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+    packages:
+      - curl
+      - git
+      - wget
+      - python3-pip
+      - python3-setuptools
+      - virtualenv
+      - nano
+      - vim
+      - tmux
+      - rsync
+      - figlet
+      - openssl
+      - build-essential 
+      - cmake
+      - htop
+  become: yes
+  tags:
+    - commondependencies

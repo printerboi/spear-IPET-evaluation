@@ -1,0 +1,13 @@
+##################################
+#
+# SPEAR Ansible playbook
+#
+##################################
+
+# Clone the spear repo
+- name: Clone SPEAR to the current machine
+  ansible.builtin.git:
+    repo: git@github.com:sse-labs/spear.git
+    dest: "{{ prefix_path  }}"
+    accept_hostkey: yes
+    update: yes
