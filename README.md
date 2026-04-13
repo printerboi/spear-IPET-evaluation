@@ -15,9 +15,7 @@ project-root/
 │
 ├── evaluation_programs/    # Programs used to perform the evaluation
 │
-├── scripts/                # Scripts for automation (e.g., visualization, data aggregation)
-│
-└── spear/                  # SPEAR framework included as a Git submodule
+└── scripts/                # Scripts for automation (e.g., visualization, data aggregation)
 ```
 
 ## Setting up a device
