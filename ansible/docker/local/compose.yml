@@ -1,0 +1,19 @@
+services:
+  ansible:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: spear-ansible-test
+    container_name: spear-ansible-test
+    working_dir: /workspace
+    volumes:
+      - ./../../:/workspace
+    stdin_open: true
+    tty: true
+    command:
+      - ansible-playbook
+      - -i
+      - inventory.yml
+      - site.yml
+      - --limit
+      - container_local

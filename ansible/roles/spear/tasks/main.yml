@@ -5,9 +5,17 @@
 ##################################
 
 # Clone the spear repo
-- name: Clone SPEAR to the current machine
-  ansible.builtin.git:
-    repo: git@github.com:sse-labs/spear.git
-    dest: "{{ prefix_path  }}"
-    accept_hostkey: yes
-    update: yes
+- name: Install SPEAR
+  block:
+    - name: Clone SPEAR to the current machine
+      ansible.builtin.git:
+        repo: https://github.com/sse-labs/spear.git
+        dest: "{{ prefix_path }}/spear"
+        version: "evaluation"
+        update: true
+
+    - name: Run Installer
+      ansible.builtin.shell: |
+        ./install.sh
+      args:
+        chdir: "{{ prefix_path }}/spear"
