@@ -13,4 +13,4 @@ services:
       - inventory.yml
       - site.yml
       - --limit
-      - container_local
+      - docker

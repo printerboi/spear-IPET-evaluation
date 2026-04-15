@@ -10,5 +10,6 @@
     regexp: 'enabled=1'
     replace: 'enabled=0'
   become: true
+  when: is_pipeline == false
   tags:
     - misc
