@@ -4,3 +4,12 @@
 #
 ##################################
 
+- name: Disable error windows
+  ansible.builtin.replace:
+    path: /etc/default/apport
+    regexp: 'enabled=1'
+    replace: 'enabled=0'
+  become: true
+  when: is_ci == false
+  tags:
+    - common
