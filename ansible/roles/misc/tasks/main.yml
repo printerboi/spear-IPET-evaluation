@@ -10,6 +10,5 @@
     regexp: 'enabled=1'
     replace: 'enabled=0'
   become: true
-  when: is_ci == false
   tags:
-    - common
+    - misc
