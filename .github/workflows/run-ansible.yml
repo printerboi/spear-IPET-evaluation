@@ -1,0 +1,42 @@
+name: Validate Ansible In Docker
+
+on:
+  pull_request:
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/**'
+  push:
+    branches:
+      - main
+      - 1-add-ansible-structure
+    paths:
+      - 'ansible/**'
+      - '.github/workflows/**'
+  workflow_dispatch:
+
+jobs:
+  validate-ansible:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ansible/docker/pipeline
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Show Docker versions
+        run: |
+          docker --version
+          docker compose version
+
+      - name: Build ansible container
+        run: docker compose build ansible
+
+      - name: Run playbook in container
+        run: docker compose run --rm ansible
+
+      - name: Clean up
+        if: always()
+        run: docker compose down --volumes --remove-orphans

@@ -1,0 +1,7 @@
+---
+- name: SPEAR Ansible Setup
+  hosts: all
+  roles:
+    - dependencies
+    - spear
+    - misc

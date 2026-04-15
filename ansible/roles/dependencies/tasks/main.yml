@@ -1,0 +1,122 @@
+##################################
+#
+# Dependencies Ansible playbook
+#
+##################################
+
+
+# INSTALL SYSTEM PACKAGES
+- name: Install generic system packages
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  vars:
+    packages:
+      - curl
+      - git
+      - wget
+      - python3
+      - python3-pip
+      - virtualenv
+      - nano
+      - vim
+      - tmux
+      - figlet
+      - openssl
+      - build-essential
+      - htop
+      - ninja-build
+      - linux-tools-common
+      - linux-tools-6.17.0-20-generic
+      - libbpf-dev
+      - linux-tools-generic
+      - libzstd-dev
+      - zlib1g-dev
+  become: true
+  tags:
+    - commondependencies
+
+- name: Install depdency packages available in apt
+  ansible.builtin.apt:
+    name: "{{ packages }}"
+    state: present
+    update_cache: true
+  vars:
+    packages:
+      - llvm-17
+      - llvm-17-dev
+      - clang-17
+      - clang-tools-17
+      - libclang-17-dev
+      - lld-17
+      - cmake
+      - make
+      - z3
+      - nlohmann-json3-dev
+      - libzstd-dev
+      - zlib1g-dev
+      - coinor-cbc
+      - coinor-libcbc-dev
+  become: true
+  tags:
+    - commondependencies
+
+- name: Check if Phasar is installed
+  ansible.builtin.stat:
+    path: /usr/local/bin/phasar-cli
+  register: phasar_installed
+
+- name: Install Phasar
+  block:
+    - name: Get Phasar from git
+      ansible.builtin.git:
+        repo: https://github.com/secure-software-engineering/phasar.git
+        dest: "{{ prefix_path }}/phasar"
+        version: v2604
+        recursive: true
+        update: true
+
+    - name: Patch LLVM Version
+      ansible.builtin.replace:
+        path: "{{ prefix_path }}/phasar/CMakeLists.txt"
+        regexp: 'set\(PHASAR_LLVM_VERSION 16 CACHE STRING "The LLVM major-version that PhASAR should use"\)'
+        replace: 'set(PHASAR_LLVM_VERSION 17 CACHE STRING "The LLVM major-version that PhASAR should use")'
+
+    - name: Create build dir
+      ansible.builtin.file:
+        path: "{{ prefix_path }}/phasar/build"
+        state: directory
+        mode: '0755'
+
+    - name: Configure Phasar build directory
+      ansible.builtin.command:
+        cmd: >
+          cmake -G Ninja
+          -DCMAKE_BUILD_TYPE=Release
+          -DCMAKE_C_COMPILER=/usr/bin/clang-17
+          -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17
+          ..
+        chdir: "{{ prefix_path }}/phasar/build"
+      register: phasar_cmake_configure
+      changed_when: >
+        "Configuring done" in phasar_cmake_configure.stdout
+        or "Generating done" in phasar_cmake_configure.stdout
+        or "Build files have been written to" in phasar_cmake_configure.stdout
+
+    - name: Build Phasar
+      ansible.builtin.command:
+        cmd: cmake --build .
+        chdir: "{{ prefix_path }}/phasar/build"
+      register: phasar_build
+      changed_when: >
+        phasar_build.stdout is search("^[\\[].*|ninja:|Building|Linking", multiline=True)
+
+    - name: Install Phasar
+      ansible.builtin.command:
+        cmd: cmake --install .
+        chdir: "{{ prefix_path }}/phasar/build"
+      become: true
+      register: phasar_install
+      changed_when: true
+  when: not phasar_installed.stat.exists

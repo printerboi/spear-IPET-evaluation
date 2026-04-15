@@ -1,0 +1,21 @@
+##################################
+#
+# SPEAR Ansible playbook
+#
+##################################
+
+# Clone the spear repo
+- name: Install SPEAR
+  block:
+    - name: Clone SPEAR to the current machine
+      ansible.builtin.git:
+        repo: https://github.com/sse-labs/spear.git
+        dest: "{{ prefix_path }}/spear"
+        version: "evaluation"
+        update: true
+
+    - name: Run Installer
+      ansible.builtin.shell: |
+        ./install.sh
+      args:
+        chdir: "{{ prefix_path }}/spear"

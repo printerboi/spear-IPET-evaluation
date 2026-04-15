@@ -1,0 +1,23 @@
+all:
+  hosts:
+    container_local:
+      ansible_connection: local
+      ansible_python_interpreter: /usr/bin/python3
+      ansible_user: root
+      prefix_path: /opt/sselabs
+      is_pipeline: false
+
+    docker:
+      ansible_connection: local
+      ansible_python_interpreter: /usr/bin/python3
+      ansible_user: root
+      prefix_path: /opt/sselabs
+      is_pipeline: true
+
+    dummy_device:
+      ansible_user: spear
+      ansible_host: xxx.xxx.xxx.xxx
+      ansible_connection: ssh
+      ansible_python_interpreter: /usr/bin/python3
+      prefix_path: /opt/sselabs
+      is_pipeline: false
