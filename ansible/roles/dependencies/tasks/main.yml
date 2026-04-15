@@ -72,20 +72,20 @@
     - name: Get Phasar from git
       ansible.builtin.git:
         repo: https://github.com/secure-software-engineering/phasar.git
-        dest: "{{ sselabs }}/phasar"
+        dest: "{{ prefix_path }}/phasar"
         version: v2604
         recursive: true
         update: true
 
     - name: Patch LLVM Version
       ansible.builtin.replace:
-        path: "{{ sselabs }}/phasar/CMakeLists.txt"
+        path: "{{ prefix_path }}/phasar/CMakeLists.txt"
         regexp: 'set\(PHASAR_LLVM_VERSION 16 CACHE STRING "The LLVM major-version that PhASAR should use"\)'
         replace: 'set(PHASAR_LLVM_VERSION 17 CACHE STRING "The LLVM major-version that PhASAR should use")'
 
     - name: Create build dir
       ansible.builtin.file:
-        path: "{{ sselabs }}/phasar/build"
+        path: "{{ prefix_path }}/phasar/build"
         state: directory
         mode: '0755'
 
@@ -107,7 +107,7 @@
     - name: Build Phasar
       ansible.builtin.command:
         cmd: cmake --build .
-        chdir: "{{ sselabs }}/phasar/build"
+        chdir: "{{ prefix_path }}/phasar/build"
       register: phasar_build
       changed_when: >
         phasar_build.stdout is search("^[\\[].*|ninja:|Building|Linking", multiline=True)
@@ -115,7 +115,7 @@
     - name: Install Phasar
       ansible.builtin.command:
         cmd: cmake --install .
-        chdir: "{{ sselabs }}/phasar/build"
+        chdir: "{{ prefix_path }}/phasar/build"
       become: true
       register: phasar_install
       changed_when: true
