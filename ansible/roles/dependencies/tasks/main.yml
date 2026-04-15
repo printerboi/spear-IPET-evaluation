@@ -97,7 +97,7 @@
           -DCMAKE_C_COMPILER=/usr/bin/clang-17
           -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17
           ..
-        chdir: "{{ sselabs }}/phasar/build"
+        chdir: "{{ prefix_path }}/phasar/build"
       register: phasar_cmake_configure
       changed_when: >
         "Configuring done" in phasar_cmake_configure.stdout
