@@ -2,3 +2,4 @@
 .ssh_deploy_key.pub
 .ansible
 .venv
+__pycache__/
