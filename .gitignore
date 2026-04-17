@@ -3,3 +3,4 @@
 .ansible
 .venv
 __pycache__/
+.vscode
