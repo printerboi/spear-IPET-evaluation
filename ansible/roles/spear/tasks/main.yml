@@ -19,3 +19,13 @@
         ./install.sh
       args:
         chdir: "{{ prefix_path }}/spear"
+  when:
+    - not skip_phasar
+
+
+- name: Copy Evaluation Scripts
+  block:
+    - name: Copy all
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../scripts/"
+        dest: "{{ prefix_path }}/scripts"

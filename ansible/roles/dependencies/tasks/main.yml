@@ -96,21 +96,14 @@
           -DCMAKE_BUILD_TYPE=Release
           -DCMAKE_C_COMPILER=/usr/bin/clang-17
           -DCMAKE_CXX_COMPILER=/usr/bin/clang++-17
+          -DBUILD_TESTING=OFF
           ..
         chdir: "{{ prefix_path }}/phasar/build"
-      register: phasar_cmake_configure
-      changed_when: >
-        "Configuring done" in phasar_cmake_configure.stdout
-        or "Generating done" in phasar_cmake_configure.stdout
-        or "Build files have been written to" in phasar_cmake_configure.stdout
 
     - name: Build Phasar
       ansible.builtin.command:
-        cmd: cmake --build .
+        cmd: cmake --build . --parallel 1
         chdir: "{{ prefix_path }}/phasar/build"
-      register: phasar_build
-      changed_when: >
-        phasar_build.stdout is search("^[\\[].*|ninja:|Building|Linking", multiline=True)
 
     - name: Install Phasar
       ansible.builtin.command:
@@ -119,4 +112,6 @@
       become: true
       register: phasar_install
       changed_when: true
-  when: not phasar_installed.stat.exists
+  when:
+    - not phasar_installed.stat.exists
+    - not skip_phasar
