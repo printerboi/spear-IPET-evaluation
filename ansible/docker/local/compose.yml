@@ -5,9 +5,9 @@ services:
       dockerfile: Dockerfile
     image: spear-ansible-test
     container_name: spear-ansible-test
-    working_dir: /workspace
+    working_dir: /workspace/ansible
     volumes:
-      - ./../../:/workspace
+      - ./../../../:/workspace
     stdin_open: true
     tty: true
     command:

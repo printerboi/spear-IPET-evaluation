@@ -63,14 +63,15 @@ class Evaluator:
             self.cpu_vals.append(cpu)
             self.syscall_vals.append(syscalls)
 
-        self.log("Calculating average energy cost from recorded values")
+        self.log("Calculating statistics over energy cost...")
         
         # Calculate the average dataframe of each profile component
-        cpu_avg, syscall_avg = self._calculate_average()
+        cpu_stats, syscall_stats = self._calc_stats()
 
         # Save calculated average data frames to csv
-        cpu_avg.to_csv(output_csv_path / "cpu_average.csv", index=False)
-        syscall_avg.to_csv(output_csv_path / "syscall_average.csv", index=False)
+        cpu_stats.to_csv(output_csv_path / "cpu_stats.csv", index=False)
+        syscall_stats.to_csv(output_csv_path / "syscall_stats.csv", index=False)
+
 
     def _run_profiling(self, iteration_index):
         """
@@ -129,29 +130,86 @@ class Evaluator:
         syscall_dataframe = pd.DataFrame(list(syscall_metrics.items()), columns=["syscall", "value"])
 
         return cpu_dataframe, syscall_dataframe
+    
+    def _calc_stats(self):
+        # Concat the frames
+        cpu_concatenated = pd.concat(self.cpu_vals, ignore_index=True)
+        syscall_concatenated = pd.concat(self.syscall_vals, ignore_index=True)
 
-    def _calculate_average(self):
+        # CPU stats
+        cpu_stats = (
+            cpu_concatenated
+            .groupby("instruction")
+            .agg(
+                median_value=("value", "median"),
+                mean_value=("value", "mean"),
+                std_value=("value", "std"),
+                var_value=("value", "var"),
+                min_value=("value", "min"),
+                max_value=("value", "max")
+            )
+            .reset_index()
+        )
+
+        cpu_stats["coefficient_of_variation"] = (
+            cpu_stats["std_value"] / cpu_stats["mean_value"]
+        )
+
+        # Syscall stats
+        syscall_stats = (
+            syscall_concatenated
+            .groupby("syscall")
+            .agg(
+                median_value=("value", "median"),
+                mean_value=("value", "mean"),
+                std_value=("value", "std"),
+                var_value=("value", "var"),
+                min_value=("value", "min"),
+                max_value=("value", "max")
+            )
+            .reset_index()
+        )
+
+        syscall_stats["coefficient_of_variation"] = (
+            syscall_stats["std_value"] / syscall_stats["mean_value"]
+        )
+
+        return cpu_stats, syscall_stats
+
+    def _calculate_coefvariance(self):
         """
-        Calculate average energy per entitiy over all recorded cpu and syscall dataframes
+        Calculate coefficient of variation (std / mean) per entity
+        over all recorded cpu and syscall dataframes
         """
         # Concat the frames
-        cpu_concated = pd.concat(self.cpu_vals, ignore_index=True)
-        syscall_concated = pd.concat(self.syscall_vals, ignore_index=True)
+        cpu_concatenated = pd.concat(self.cpu_vals, ignore_index=True)
+        syscall_concatenated = pd.concat(self.syscall_vals, ignore_index=True)
 
-        # Calculate the mean
-        average_cpu = (
-            cpu_concated
-            .groupby("instruction", as_index=False)["value"]
-            .mean()
+        # CPU: compute mean and std per instruction
+        cpu_statistics = (
+            cpu_concatenated
+            .groupby("instruction")["value"]
+            .agg(mean_value="mean", std_value="std")
+            .reset_index()
         )
 
-        average_syscall = (
-            syscall_concated
-            .groupby("syscall", as_index=False)["value"]
-            .mean()
+        cpu_statistics["coefficient_of_variation"] = (
+            cpu_statistics["std_value"] / cpu_statistics["mean_value"]
         )
 
-        return average_cpu, average_syscall
+        # Syscall: compute mean and std per syscall
+        syscall_statistics = (
+            syscall_concatenated
+            .groupby("syscall")["value"]
+            .agg(mean_value="mean", std_value="std")
+            .reset_index()
+        )
+
+        syscall_statistics["coefficient_of_variation"] = (
+            syscall_statistics["std_value"] / syscall_statistics["mean_value"]
+        )
+
+        return cpu_statistics, syscall_statistics
 
     def log(self, msg):
         """

@@ -1,0 +1,275 @@
+(.venv) max@desktop:~/Documents/repos/spear-IPET-evaluation/scripts/profileevaluator$ sudo .venv/bin/python main.py D_DUMMY
+[16:03:32] Running profiling for device D_DUMMY
+[16:03:32] Starting profile evaluation.
+[16:03:32] Generating profile 0
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1351.350000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 16:26:04 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[16:36:51] Constructing dataframes from recorded values profile_0.json
+[16:36:51] Generating profile 1
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1423.500000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 17:00:35 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[17:11:28] Constructing dataframes from recorded values profile_1.json
+[17:11:28] Generating profile 2
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1402.050000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 17:34:51 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[17:44:46] Constructing dataframes from recorded values profile_2.json
+[17:44:46] Generating profile 3
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1515.150000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 18:10:02 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[18:17:17] Constructing dataframes from recorded values profile_3.json
+[18:17:17] Generating profile 4
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1361.100000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 18:39:59 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[18:49:31] Constructing dataframes from recorded values profile_4.json
+[18:49:31] Generating profile 5
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1304.550000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 19:11:16 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[19:21:32] Constructing dataframes from recorded values profile_5.json
+[19:21:32] Generating profile 6
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1339.650000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 19:43:52 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[19:53:38] Constructing dataframes from recorded values profile_6.json
+[19:53:38] Generating profile 7
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1339.650000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 20:15:58 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[20:26:27] Constructing dataframes from recorded values profile_7.json
+[20:26:27] Generating profile 8
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1343.550000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 20:48:51 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[20:58:52] Constructing dataframes from recorded values profile_8.json
+[20:58:52] Generating profile 9
+[CPU]: Executing CPU profiler 
+[CPU]: Programs for profiling stored at /etc/spear/profile/
+[CPU]: repeated_executions 10000
+[CPU]: number of cores 12
+[META]: Executing Metaprofiler
+[META]: Querying Metainformation...
+[META]: CPU Name 11th Gen Intel(R) Core(TM) i5-11400F @ 2.60GHz
+[META]: CPU Architecture 6
+[META]: Number of Cores 12
+[META]: Rapl Unit 0.000061
+[CPU]: Starting CPU profiling. This may take a while. Grab a coffee!
+[CPU]: Profile programs contain 10000 iterations of the underlying instruction.
+[CPU]: Generating k values for regression: limit=1000, step=50, offset=300
+[CPU]: Profiling will take approximately 1374.750000 seconds.
+[CPU]: Estimated finish time: Thu Apr 16 21:21:47 2026
+
+[CPU]: CPU profiling finished!
+[SYSCALL]: Executing SyscallProfiler
+[SYSCALL]: Successfully attached syscall trace bpf
+[SYSCALL]: Starting SyscallProfiler
+[SYSCALL]: Running for 60 seconds...
+[SYSCALL]: Expecting to find up to 462 syscall IDs...
+[SYSCALL]: Finishing SyscallProfiler
+Writing /home/max/Documents/repos/spear-IPET-evaluation/data/D_DUMMY/profile/raw/profile.json
+Profiling finished!
+[21:31:04] Constructing dataframes from recorded values profile_9.json
+[21:31:04] Calculating average energy cost from recorded values
+(.venv) max@desktop:~/Documents/repos/spear-IPET-evaluation/scripts/profileevaluator$ 
