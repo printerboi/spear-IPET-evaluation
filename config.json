@@ -1,10 +1,10 @@
 {
   "profiling": {
-    "min_program_energy": 1e-8,
-    "min_instruction_energy": 1e-8,
+    "min_program_energy": 1e-4,
+    "min_instruction_energy": 1e-11,
     "cpu_regression": {
       "limit": 1000,
-      "step": 50,
+      "step": 100,
       "offset": 300
     },
     "syscalls": {
@@ -16,7 +16,7 @@
   "analysis": {
     "type": "comparison",
     "outputmode": "normal",
-    "outputDirectory": "../../data/test",
+    "outputDirectory": "/tmp/spear",
     "clusteredCacheEnabled": true,
     "feasibilityEnabled": true,
     "writeDotFiles": false,
