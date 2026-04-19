@@ -79,7 +79,39 @@ In order to deploy the ansible playbook, we created a custom deploy script. Call
 
 Expect the deployment to take some time depending on the hardware setup you are deploying to.
 
-## Executing SPEAR
+## Executing the Evaluation
+
+Our evaluation is split into two parts. The whole process is described by the following diagram:
+
+![](assets/SPEAR_evaluation.jpg)
+
+In order to run the evaluation, we prepared multiple evaluation scripts using python.
+
+### Running the Profile Evaluation
+
+To evaluate the profile generation on an evaluation device execute the script `profileevaluator`.
+First, navigate into the respective subfolder:
+```
+cd scripts/profileevaluator
+```
+Create a virtual environment and source the respective environment
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+Install the needed dependencies
+```
+pip install -r requirements.txt
+```
+Run the script using:
+```
+sudo .venv/bin/python main.py <Name of the eval device>
+```
+Choose a meaningful and unique name for `<Name of the eval device>`. The name will be used to store the data generated during the evaluation.
+
+After the evaluation is done, the results can be found in `/opt/sselabs/data`
+
+### Running the Analysis Evaluation
 
 ## Collecting Data
 
