@@ -61,6 +61,7 @@ Create a new device entry for your evaluation machine:
     ansible_host: <ip>
     ansible_connection: ssh
     ansible_python_interpreter: /usr/bin/python3
+    ansible_ssh_private_key_file: ./.ssh_deploy_key
     prefix_path: /opt/sselabs
     is_pipeline: false
     skip_phasar: false
