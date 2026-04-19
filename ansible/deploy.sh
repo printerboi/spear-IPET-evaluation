@@ -17,4 +17,4 @@ inventory_file="inventory.yml"
 playbook_file="site.yml"
 
 # Run ansible-playbook with limit to the given hostname
-ansible-playbook -i "$inventory_file" "$playbook_file" --limit "$target_hostname"
+ansible-playbook -i "$inventory_file" "$playbook_file" --limit "$target_hostname" -K
