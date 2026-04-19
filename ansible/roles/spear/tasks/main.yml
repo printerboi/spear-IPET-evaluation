@@ -25,7 +25,28 @@
 
 - name: Copy Evaluation Scripts
   block:
-    - name: Copy all
-      ansible.builtin.copy:
+    - name: Sync scripts excluding .venv directories
+      ansible.posix.synchronize:
         src: "{{ playbook_dir }}/../scripts/"
         dest: "{{ prefix_path }}/scripts"
+        recursive: yes
+        rsync_opts:
+          - "--exclude=.venv"
+
+- name: Copy config
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../config.json"
+    dest: "{{ prefix_path }}/config.json"
+    mode: '0644'
+
+- name: Copy cached config
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../config_cache.json"
+    dest: "{{ prefix_path }}/config_cache.json"
+    mode: '0644'
+
+- name: Copy profile
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../profile.json"
+    dest: "{{ prefix_path }}/profile.json"
+    mode: '0644'

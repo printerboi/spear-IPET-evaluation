@@ -18,6 +18,8 @@
       - wget
       - python3
       - python3-pip
+      - python3.12-venv
+      - python-is-python3
       - virtualenv
       - nano
       - vim
@@ -62,6 +64,15 @@
   tags:
     - commondependencies
 
+- name: Ensure prefix path exists
+  become: true
+  ansible.builtin.file:
+    path: "{{ prefix_path }}"
+    state: directory
+    owner: spear
+    group: spear
+    mode: '0755'
+
 - name: Check if Phasar is installed
   ansible.builtin.stat:
     path: /usr/local/bin/phasar-cli
@@ -102,7 +113,7 @@
 
     - name: Build Phasar
       ansible.builtin.command:
-        cmd: cmake --build . --parallel 1
+        cmd: "ninja -j {{ ansible_facts.processor_vcpus }}"
         chdir: "{{ prefix_path }}/phasar/build"
 
     - name: Install Phasar

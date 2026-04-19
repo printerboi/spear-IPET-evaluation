@@ -10,6 +10,53 @@
     regexp: 'enabled=1'
     replace: 'enabled=0'
   become: true
-  when: is_pipeline == false
+  when: not is_pipeline
+  tags:
+    - misc
+
+- name: Get desktop user UID
+  ansible.builtin.command: "id -u spear"
+  register: desktop_user_uid_result
+  changed_when: false
+  tags:
+    - misc
+
+- name: Disable screen blanking
+  ansible.builtin.command: gsettings set org.gnome.desktop.session idle-delay 0
+  become: true
+  become_user: spear
+  environment:
+    DISPLAY: ":0"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
+  tags:
+    - misc
+
+- name: Disable screen lock
+  ansible.builtin.command: gsettings set org.gnome.desktop.screensaver lock-enabled false
+  become: true
+  become_user: spear
+  environment:
+    DISPLAY: ":0"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
+  tags:
+    - misc
+
+- name: Disable sleep on AC
+  ansible.builtin.command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
+  become: true
+  become_user: spear
+  environment:
+    DISPLAY: ":0"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
+  tags:
+    - misc
+
+- name: Disable sleep on battery
+  ansible.builtin.command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type nothing
+  become: true
+  become_user: spear
+  environment:
+    DISPLAY: ":0"
+    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
   tags:
     - misc
