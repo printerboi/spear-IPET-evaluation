@@ -2,6 +2,8 @@
 
 # Installing Section
 
+SKIPBUILD=true
+
 echo "Downloading evaluation programs..."
 
 if not [ -d "dependencies" ]; then
@@ -18,12 +20,26 @@ echo "(1/X) Installing Libsodium"
 if [ ! -d "dependencies/libsodium-1.0.22" ]; then
     tar -xzf dependencies/download/libsodium.tar.gz -C dependencies/
     cd dependencies/libsodium-1.0.22 && ./configure
+else
+    echo "=> Libsodium already satisfied"
+fi
+
+echo "(2/X) Installing SQLite"
+
+[ ! -f "dependencies/download/sqlite3.zip" ] && curl --output dependencies/download/sqlite3.zip "https://sqlite.org/2025/sqlite-amalgamation-3500400.zip"
+if [ ! -d "dependencies/sqlite" ]; then
+    unzip -q dependencies/download/sqlite3.zip -d dependencies/
+    mv dependencies/sqlite-amalgamation-3500400 dependencies/sqlite
+else
+    echo "=> SQLite already satisfied. Continuing..."
 fi
 
 
 # BUILDING Section
 
 
-echo "(7/X) Building Libsodium"
-mkdir -p dependencies/.build/libsodium
-cd Libsodium && make libsodium
+if [ "$SKIPBUILD" = false ]; then
+    echo "(7/X) Building Libsodium"
+    mkdir -p dependencies/.build/libsodium
+    cd Libsodium && make libsodium
+fi
