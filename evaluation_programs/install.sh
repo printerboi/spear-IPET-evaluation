@@ -20,6 +20,7 @@ echo "(1/X) Installing Libsodium"
 if [ ! -d "dependencies/libsodium-1.0.22" ]; then
     tar -xzf dependencies/download/libsodium.tar.gz -C dependencies/
     cd dependencies/libsodium-1.0.22 && ./configure
+    cd ../..
 else
     echo "=> Libsodium already satisfied"
 fi

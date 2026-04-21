@@ -3,7 +3,8 @@
 .PHONY: libsodium-clean
 .PHONY: clean
 
-LLVM_PREFIX := /opt/homebrew/opt/llvm@17/bin
+SHELL := /bin/bash
+LLVM_PREFIX := /usr/lib/llvm-17/bin/
 CLANG := $(LLVM_PREFIX)/clang
 CLANGXX := $(LLVM_PREFIX)/clang++
 LLVM_LINK := $(LLVM_PREFIX)/llvm-link
@@ -35,7 +36,7 @@ libsodium:
 		output_path="$(LIBSODIUM_BUILD_DIR)/$${relative_path%.c}.bc"; \
 		output_directory="$$(dirname "$$output_path")"; \
 		mkdir -p "$$output_directory"; \
-		$(CLANG) -O0 -arch arm64 -fPIC -Xclang -disable-O0-optnone -emit-llvm -c "$$file" $(LIBSODIUM_INCLUDES) -o "$$output_path" || exit 1; \
+		$(CLANG) -O0 -fPIC -Xclang -disable-O0-optnone -emit-llvm -c "$$file" $(LIBSODIUM_INCLUDES) -o "$$output_path" || exit 1; \
 	done
 	find "$(LIBSODIUM_BUILD_DIR)" -name '*.bc' ! -name 'libsodium.bc' -print0 | \
 	xargs -0 $(LLVM_LINK) -o "$(LIBSODIUM_BUILD_DIR)/libsodium.bc"
@@ -47,7 +48,7 @@ $(EXAMPLE_BUILD_DIR):
 	mkdir -p "$(EXAMPLE_BUILD_DIR)"
 
 $(EXAMPLE_BUILD_DIR)/%.bc: %.cpp | $(EXAMPLE_BUILD_DIR)
-	$(CLANGXX) -O0 -arch arm64 -emit-llvm -c "$<" $(LIBSODIUM_INCLUDES) -o "$@"
+	$(CLANGXX) -O0 -emit-llvm -c "$<" $(LIBSODIUM_INCLUDES) -o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LIBSODIUM_BUILD_DIR)/libsodium.bc | $(EXAMPLE_BUILD_DIR)
 	$(LLVM_LINK) $^ -o "$@"
@@ -56,7 +57,7 @@ $(EXAMPLE_BUILD_DIR)/%.ll: $(EXAMPLE_BUILD_DIR)/%_combined.bc
 	$(LLVM_DIS) "$<" -o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%: $(EXAMPLE_BUILD_DIR)/%_combined.bc
-	$(CLANGXX) -O0 -arch arm64 "$<" -o "$@"
+	$(CLANGXX) -O0 "$<" -o "$@"
 
 libsodium-clean:
 	rm -rf "$(LIBSODIUM_BUILD_DIR)"
