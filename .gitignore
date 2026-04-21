@@ -5,3 +5,6 @@
 __pycache__/
 .vscode
 *.dot
+
+evaluation_programs/dependencies
+.build/
