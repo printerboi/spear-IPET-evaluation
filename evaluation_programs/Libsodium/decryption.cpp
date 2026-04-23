@@ -1,5 +1,6 @@
 /*
- * Decryption with fixed key and embedded ciphertext (DEMO ONLY)
+ * Copyright (c) 2026 Maximilian Krebs
+ * All rights reserved.
  */
 
 #include <sodium.h>

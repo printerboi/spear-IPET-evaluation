@@ -35,12 +35,22 @@ else
     echo "=> SQLite already satisfied. Continuing..."
 fi
 
+echo "(3/X) Installing cJson"
+
+[ ! -f "dependencies/download/cjson.zip" ] && curl -L --output dependencies/download/cjson.zip "https://github.com/DaveGamble/cJSON/archive/refs/tags/v1.7.19.zip"
+if [ ! -d "dependencies/cjson" ]; then
+    unzip -q dependencies/download/cjson.zip -d dependencies/
+    mv dependencies/cJSON-1.7.19 dependencies/cJSON
+else
+    echo "=> SQLite already satisfied. Continuing..."
+fi
+
 
 # BUILDING Section
 
 
-if [ "$SKIPBUILD" = false ]; then
-    echo "(7/X) Building Libsodium"
-    mkdir -p dependencies/.build/libsodium
-    cd Libsodium && make libsodium
-fi
+# if [ "$SKIPBUILD" = false ]; then
+#     echo "(7/X) Building Libsodium"
+#     mkdir -p dependencies/.build/libsodium
+#     cd Libsodium && make libsodium
+# fi
