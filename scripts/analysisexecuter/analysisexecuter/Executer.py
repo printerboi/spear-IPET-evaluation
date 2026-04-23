@@ -18,7 +18,7 @@ TMP_PATH_STR = "/tmp/spear"
 CLUSTER_CACHE_PATH = PROJECT_ROOT / "cluster_cache.json"
 
 # Constants
-REPETITIONS=50
+REPETITIONS=5
 
 
 class Executer:
@@ -112,7 +112,6 @@ class Executer:
             cached_summary_runs.append(summary_row)
             cached_function_runs.append(function_rows)
 
-
         # Aggregate all recorded values from our lists to form a comprehension table
         aggregated_summary_rows, aggregated_function_rows = self._aggregate_results(
             filename=filename,
@@ -137,6 +136,8 @@ class Executer:
         # Store the frames as csv file
         summary_dataframe.to_csv(summary_csv_path, index=False)
         functions_dataframe.to_csv(functions_csv_path, index=False)
+
+        self._remove_cluster_cache()
 
     def _spear_runner(self, program: Path, config: Path):
         """
