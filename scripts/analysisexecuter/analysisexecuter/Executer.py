@@ -15,7 +15,7 @@ CONFIG_PATH_WITH_CACHE = PROJECT_ROOT / "config_cache.json"
 PROFILE_PATH = PROJECT_ROOT / "profile.json"
 PROGRAM_PATH = PROJECT_ROOT / "evaluation_programs"
 TMP_PATH_STR = "/tmp/spear"
-CLUSTER_CACHE_PATH = PROJECT_ROOT / "cluster_cache.json"
+CLUSTER_CACHE_PATH = Path(__file__).resolve().parents[1] / "cluster_cache.json"
 
 # Constants
 REPETITIONS=5
@@ -54,6 +54,10 @@ class Executer:
         for program_path in programs:
             # Run the analysis for the found program
             self._run_benchmark(program_path)
+
+        print(CLUSTER_CACHE_PATH)
+        self._remove_cluster_cache()
+
 
     def _run_benchmark(self, program: Path):
         """
@@ -136,8 +140,6 @@ class Executer:
         # Store the frames as csv file
         summary_dataframe.to_csv(summary_csv_path, index=False)
         functions_dataframe.to_csv(functions_csv_path, index=False)
-
-        self._remove_cluster_cache()
 
     def _spear_runner(self, program: Path, config: Path):
         """
