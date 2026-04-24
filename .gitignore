@@ -10,3 +10,7 @@ evaluation_programs/_dependencies
 .build/
 university.xml
 books_updated.xml
+
+gradient.png
+grayscale.png
+flipped.png
