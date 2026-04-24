@@ -12,8 +12,8 @@ llvm_LINK := $(llvm_PREFIX)/llvm-link
 llvm_DIS := $(llvm_PREFIX)/llvm-dis
 llvm_OPT := $(llvm_PREFIX)/opt
 
-sqlite_SOURCE_DIR := ../dependencies/sqlite
-sqlite_BUILD_DIR := ../dependencies/.build/sqlite
+sqlite_SOURCE_DIR := ../_dependencies/sqlite
+sqlite_BUILD_DIR := ../_dependencies/.build/sqlite
 
 sqlite_INCLUDE_FLAGS := \
 	-I$(sqlite_SOURCE_DIR)

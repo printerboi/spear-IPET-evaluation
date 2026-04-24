@@ -10,8 +10,8 @@ CLANGXX := $(LLVM_PREFIX)/clang++
 LLVM_LINK := $(LLVM_PREFIX)/llvm-link
 LLVM_DIS := $(LLVM_PREFIX)/llvm-dis
 
-LIBSODIUM_SRC_DIR := ../dependencies/libsodium-1.0.22
-LIBSODIUM_BUILD_DIR := ../dependencies/.build/libsodium
+LIBSODIUM_SRC_DIR := ../_dependencies/libsodium-1.0.22
+LIBSODIUM_BUILD_DIR := ../_dependencies/.build/libsodium
 
 LIBSODIUM_INCLUDES := \
 	-I$(LIBSODIUM_SRC_DIR)/src/libsodium/include \

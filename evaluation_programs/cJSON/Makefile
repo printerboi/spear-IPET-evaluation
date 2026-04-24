@@ -10,8 +10,8 @@ CLANGXX := $(LLVM_PREFIX)/clang++
 LLVM_LINK := $(LLVM_PREFIX)/llvm-link
 LLVM_DIS := $(LLVM_PREFIX)/llvm-dis
 
-CJSON_SRC_DIR := ../dependencies/cJSON
-CJSON_BUILD_DIR := ../dependencies/.build/cJSON
+CJSON_SRC_DIR := ../_dependencies/cJSON
+CJSON_BUILD_DIR := ../_dependencies/.build/cJSON
 
 CJSON_INCLUDES := \
 	-I$(CJSON_SRC_DIR) \
