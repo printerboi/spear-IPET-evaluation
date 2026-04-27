@@ -6,7 +6,7 @@ SKIPBUILD=true
 
 echo "Downloading evaluation programs..."
 
-if not [ -d "_dependencies" ]; then
+if ! [ -d "_dependencies" ]; then
     echo "_dependencies dir does not exist, creating temporary directory..."
     mkdir _dependencies/
     mkdir _dependencies/download

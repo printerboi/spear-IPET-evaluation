@@ -9,8 +9,11 @@ CLANG := $(LLVM_PREFIX)/clang
 CLANGXX := $(LLVM_PREFIX)/clang++
 LLVM_LINK := $(LLVM_PREFIX)/llvm-link
 LLVM_DIS := $(LLVM_PREFIX)/llvm-dis
+OPT := $(LLVM_PREFIX)/opt
 
-LIBSODIUM_SRC_DIR := ../_dependencies/libsodium-1.0.22
+KEEP_SYMBOLS := main
+
+LIBSODIUM_SRC_DIR := ../_dependencies/libsodium
 LIBSODIUM_BUILD_DIR := ../_dependencies/.build/libsodium
 
 LIBSODIUM_INCLUDES := \
@@ -42,16 +45,21 @@ libsodium:
 	xargs -0 $(LLVM_LINK) -o "$(LIBSODIUM_BUILD_DIR)/libsodium.bc"
 	$(LLVM_DIS) "$(LIBSODIUM_BUILD_DIR)/libsodium.bc" -o "$(LIBSODIUM_BUILD_DIR)/libsodium.ll"
 
-libsodium_examples: $(EXAMPLE_BINARIES) $(EXAMPLE_LL_FILES)
+libsodium_examples: libsodium $(EXAMPLE_BINARIES) $(EXAMPLE_LL_FILES)
 
 $(EXAMPLE_BUILD_DIR):
 	mkdir -p "$(EXAMPLE_BUILD_DIR)"
 
 $(EXAMPLE_BUILD_DIR)/%.bc: %.cpp | $(EXAMPLE_BUILD_DIR)
-	$(CLANGXX) -g -O0 -disable-O0-optnone -fno-discard-value-names -emit-llvm -c "$<" $(LIBSODIUM_INCLUDES) -o "$@"
+	$(CLANGXX) -g -O0 -Xclang -disable-O0-optnone -fno-discard-value-names -emit-llvm -c "$<" $(LIBSODIUM_INCLUDES) -o "$@"
 
-$(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LIBSODIUM_BUILD_DIR)/libsodium.bc | $(EXAMPLE_BUILD_DIR)
+$(EXAMPLE_BUILD_DIR)/%_combined_full.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LIBSODIUM_BUILD_DIR)/libsodium.bc | $(EXAMPLE_BUILD_DIR)
 	$(LLVM_LINK) $^ -o "$@"
+
+$(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_full.bc
+	$(OPT) -passes='internalize,globaldce,globalopt,dce,adce,globaldce' \
+		-internalize-public-api-list=$(KEEP_SYMBOLS) \
+		"$<" -o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%.ll: $(EXAMPLE_BUILD_DIR)/%_combined.bc
 	$(LLVM_DIS) "$<" -o "$@"
