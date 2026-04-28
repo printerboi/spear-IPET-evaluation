@@ -4,12 +4,12 @@
 .PHONY: clean
 
 SHELL := /bin/bash
-LLVM_PREFIX := /usr/lib/llvm-17/bin/
+LLVM_PREFIX := /usr/lib/llvm-17/bin
 CLANG := $(LLVM_PREFIX)/clang
 CLANGXX := $(LLVM_PREFIX)/clang++
 LLVM_LINK := $(LLVM_PREFIX)/llvm-link
 LLVM_DIS := $(LLVM_PREFIX)/llvm-dis
-OPT := $(LLVM_PREFIX)/opt
+LLVM_OPT := $(LLVM_PREFIX)/opt
 
 KEEP_SYMBOLS := main
 
@@ -57,9 +57,11 @@ $(EXAMPLE_BUILD_DIR)/%_combined_full.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LIBSODIUM_B
 	$(LLVM_LINK) $^ -o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_full.bc
-	$(OPT) -passes='internalize,globaldce,globalopt,dce,adce,globaldce' \
+	$(LLVM_OPT) \
+		-passes='internalize,globaldce,globalopt,instcombine,simplifycfg,early-cse,instcombine,simplifycfg,dce,adce,simplifycfg,globaldce' \
 		-internalize-public-api-list=$(KEEP_SYMBOLS) \
-		"$<" -o "$@"
+		"$<" \
+		-o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%.ll: $(EXAMPLE_BUILD_DIR)/%_combined.bc
 	$(LLVM_DIS) "$<" -o "$@"

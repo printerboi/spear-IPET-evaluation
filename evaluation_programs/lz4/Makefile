@@ -69,7 +69,7 @@ $(EXAMPLE_BUILD_DIR)/%_combined_full.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LZ4_BUILD_D
 
 $(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_full.bc
 	$(LLVM_OPT) \
-		-passes='internalize,globaldce,globalopt,dce,adce,globaldce' \
+		-passes='internalize,globaldce,globalopt,instcombine,simplifycfg,early-cse,instcombine,simplifycfg,dce,adce,simplifycfg,globaldce' \
 		-internalize-public-api-list=$(KEEP_SYMBOLS) \
 		"$<" \
 		-o "$@"
