@@ -26,17 +26,7 @@ else
     echo "=> Libsodium already satisfied"
 fi
 
-echo "(2/X) Installing SQLite"
-
-[ ! -f "_dependencies/download/sqlite3.zip" ] && curl --output _dependencies/download/sqlite3.zip "https://sqlite.org/2025/sqlite-amalgamation-3500400.zip"
-if [ ! -d "_dependencies/sqlite" ]; then
-    unzip -q _dependencies/download/sqlite3.zip -d _dependencies/
-    mv _dependencies/sqlite-amalgamation-3500400 _dependencies/sqlite
-else
-    echo "=> SQLite already satisfied. Continuing..."
-fi
-
-echo "(3/X) Installing cJson"
+echo "(2/X) Installing cJson"
 
 [ ! -f "_dependencies/download/cjson.zip" ] && curl -L --output _dependencies/download/cjson.zip "https://github.com/DaveGamble/cJSON/archive/refs/tags/v1.7.19.zip"
 if [ ! -d "_dependencies/cjson" ]; then
@@ -46,33 +36,7 @@ else
     echo "=> SQLite already satisfied. Continuing..."
 fi
 
-echo "(4/X) Installing TinyXML2"
-
-[ ! -f "_dependencies/download/tinyxml2.zip" ] && curl -L --output _dependencies/download/tinyxml2.zip "https://github.com/leethomason/tinyxml2/archive/refs/tags/11.0.0.zip"
-if [ ! -d "_dependencies/tinyxml2" ]; then
-    unzip -q _dependencies/download/tinyxml2.zip -d _dependencies/
-    mv _dependencies/tinyxml2-11.0.0 _dependencies/tinyxml2
-else
-    echo "=> SQLite already satisfied. Continuing..."
-fi
-
-echo "(5/X) Installing STB"
-
-if [ ! -d "_dependencies/stb" ]; then
-    git clone https://github.com/nothings/stb.git _dependencies/stb
-else
-    echo "=> stb already satisfied. Continuing..."
-fi
-
-echo "(6/X) Installing uthash"
-
-if [ ! -d "_dependencies/uthash" ]; then
-    git clone https://github.com/troydhanson/uthash.git _dependencies/uthash
-else
-    echo "=> uthash already satisfied. Continuing..."
-fi
-
-echo "(6/X) Installing lz4"
+echo "(3/X) Installing lz4"
 
 if [ ! -d "_dependencies/lz4" ]; then
     git clone https://github.com/lz4/lz4.git _dependencies/lz4
@@ -80,28 +44,40 @@ else
     echo "=> lz4 already satisfied. Continuing..."
 fi
 
-echo "(7/X) Installing zlib"
+echo "(4/X) Installing MicroPather"
 
-if [ ! -d "_dependencies/zlib" ]; then
-    git clone https://github.com/madler/zlib.git _dependencies/zlib
+if [ ! -d "_dependencies/MicroPather" ]; then
+    git clone https://github.com/leethomason/MicroPather.git _dependencies/MicroPather
 else
-    echo "=> zlib already satisfied. Continuing..."
+    echo "=> MicroPather already satisfied. Continuing..."
 fi
 
-echo "(8/X) Installing curl"
+echo "(5/X) Installing libtommath"
 
-if [ ! -d "_dependencies/curl" ]; then
-    git clone https://github.com/curl/curl.git _dependencies/curl
+if [ ! -d "_dependencies/libtommath" ]; then
+    git clone https://github.com/libtom/libtommath.git _dependencies/libtommath
 else
-    echo "=> curl already satisfied. Continuing..."
+    echo "=> libtommath already satisfied. Continuing..."
 fi
 
-echo "(9/X) Installing libpng"
+echo "(6/X) Installing coreutils"
 
-if [ ! -d "_dependencies/libpng" ]; then
-    git clone https://github.com/pnggroup/libpng.git _dependencies/libpng
+COREUTILS_VERSION="9.5"
+COREUTILS_ARCHIVE="coreutils-${COREUTILS_VERSION}.tar.xz"
+COREUTILS_URL="https://ftp.gnu.org/gnu/coreutils/${COREUTILS_ARCHIVE}"
+
+[ ! -f "_dependencies/download/${COREUTILS_ARCHIVE}" ] && \
+    curl -L --output "_dependencies/download/${COREUTILS_ARCHIVE}" "${COREUTILS_URL}"
+
+if [ ! -d "_dependencies/coreutils" ]; then
+    tar -xf "_dependencies/download/${COREUTILS_ARCHIVE}" -C _dependencies/
+    mv "_dependencies/coreutils-${COREUTILS_VERSION}" _dependencies/coreutils
+
+    cd _dependencies/coreutils
+    ./configure CC=/usr/lib/llvm-17/bin/clang CFLAGS="-g -O0 -Xclang -disable-O0-optnone -fno-discard-value-names"
+    cd ../..
 else
-    echo "=> libpng already satisfied. Continuing..."
+    echo "=> coreutils already satisfied. Continuing..."
 fi
 
 # BUILDING Section
