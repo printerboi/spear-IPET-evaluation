@@ -41,7 +41,7 @@ int main() {
     }
 
     // Define the plaintext we want to encrypt
-    const std::string plaintext = "Hallo das ist ein fixer-key Test";
+    const std::string plaintext = "Hello this is a text that should be encrypted";
 
     // Key we want to use for encryption
     unsigned char encryptionKey[crypto_aead_xchacha20poly1305_ietf_KEYBYTES] = {
