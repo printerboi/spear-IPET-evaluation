@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2026 Maximilian Krebs
+ * All rights reserved.
+ */
+
 #include "sodium.h"
 #include <iostream>
 #include <vector>
