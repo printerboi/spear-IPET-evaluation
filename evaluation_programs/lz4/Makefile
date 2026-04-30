@@ -11,8 +11,12 @@ CLANGXX := $(LLVM_PREFIX)/clang++
 LLVM_LINK := $(LLVM_PREFIX)/llvm-link
 LLVM_DIS := $(LLVM_PREFIX)/llvm-dis
 LLVM_OPT := $(LLVM_PREFIX)/opt
+LLVM_EXTRACT := $(LLVM_PREFIX)/llvm-extract
 
-KEEP_SYMBOLS := main
+KEEP_SYMBOLS := main,LZ4HC_compress_generic_internal
+
+EXCLUDED_ANALYSIS_FUNCTIONS := \
+	LZ4HC_compress_generic_internal
 
 LZ4_SOURCE_DIR := ../_dependencies/lz4
 LZ4_BUILD_DIR := ../_dependencies/.build/lz4
@@ -28,6 +32,14 @@ LZ4_COMPILE_FLAGS := \
 	-fno-discard-value-names \
 	-emit-llvm \
 	-c
+
+LZ4_SOURCE_FILES := \
+	$(LZ4_SOURCE_DIR)/lib/lz4.c \
+	$(LZ4_SOURCE_DIR)/lib/lz4hc.c
+
+LZ4_BITCODE_FILES := \
+	$(LZ4_BUILD_DIR)/lz4_base.bc \
+	$(LZ4_BUILD_DIR)/lz4hc.bc
 
 EXAMPLE_BUILD_DIR := .build
 
@@ -47,12 +59,22 @@ $(LZ4_BUILD_DIR):
 $(EXAMPLE_BUILD_DIR):
 	mkdir -p "$(EXAMPLE_BUILD_DIR)"
 
-$(LZ4_BUILD_DIR)/lz4.bc: $(LZ4_SOURCE_DIR)/lib/lz4.c | $(LZ4_BUILD_DIR)
+$(LZ4_BUILD_DIR)/lz4_base.bc: $(LZ4_SOURCE_DIR)/lib/lz4.c | $(LZ4_BUILD_DIR)
 	$(CLANG) \
 		$(LZ4_COMPILE_FLAGS) \
 		$(LZ4_INCLUDE_FLAGS) \
 		"$<" \
 		-o "$@"
+
+$(LZ4_BUILD_DIR)/lz4hc.bc: $(LZ4_SOURCE_DIR)/lib/lz4hc.c | $(LZ4_BUILD_DIR)
+	$(CLANG) \
+		$(LZ4_COMPILE_FLAGS) \
+		$(LZ4_INCLUDE_FLAGS) \
+		"$<" \
+		-o "$@"
+
+$(LZ4_BUILD_DIR)/lz4.bc: $(LZ4_BITCODE_FILES) | $(LZ4_BUILD_DIR)
+	$(LLVM_LINK) $^ -o "$@"
 
 $(LZ4_BUILD_DIR)/lz4.ll: $(LZ4_BUILD_DIR)/lz4.bc
 	$(LLVM_DIS) "$<" -o "$@"
@@ -67,17 +89,24 @@ $(EXAMPLE_BUILD_DIR)/%.bc: %.cpp | $(EXAMPLE_BUILD_DIR)
 $(EXAMPLE_BUILD_DIR)/%_combined_full.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LZ4_BUILD_DIR)/lz4.bc | $(EXAMPLE_BUILD_DIR)
 	$(LLVM_LINK) $^ -o "$@"
 
-$(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_full.bc
+$(EXAMPLE_BUILD_DIR)/%_combined_optimized.bc: $(EXAMPLE_BUILD_DIR)/%_combined_full.bc
 	$(LLVM_OPT) \
 		-passes='internalize,globaldce,globalopt,instcombine,simplifycfg,early-cse,instcombine,simplifycfg,dce,adce,simplifycfg,globaldce' \
-		-internalize-public-api-list=$(KEEP_SYMBOLS) \
+		-internalize-public-api-list="$(KEEP_SYMBOLS)" \
+		"$<" \
+		-o "$@"
+
+$(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_optimized.bc
+	$(LLVM_EXTRACT) \
+		-delete \
+		$(addprefix -func=,$(EXCLUDED_ANALYSIS_FUNCTIONS)) \
 		"$<" \
 		-o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%.ll: $(EXAMPLE_BUILD_DIR)/%_combined.bc
 	$(LLVM_DIS) "$<" -o "$@"
 
-$(EXAMPLE_BUILD_DIR)/%: $(EXAMPLE_BUILD_DIR)/%_combined.bc
+$(EXAMPLE_BUILD_DIR)/%: $(EXAMPLE_BUILD_DIR)/%_combined_optimized.bc
 	$(CLANGXX) -O0 "$<" -o "$@"
 
 lz4-clean:
