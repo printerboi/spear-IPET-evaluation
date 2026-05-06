@@ -74,7 +74,8 @@ if [ ! -d "_dependencies/coreutils" ]; then
     mv "_dependencies/coreutils-${COREUTILS_VERSION}" _dependencies/coreutils
 
     cd _dependencies/coreutils
-    ./configure CC=/usr/lib/llvm-17/bin/clang CFLAGS="-g -O0 -Xclang -disable-O0-optnone -fno-discard-value-names"
+    ./configure CC=/usr/lib/llvm-17/bin/clang CFLAGS="-g -O0 -Xclang -disable-O0-optnone -fno-discard-value-names" --prefix="$PWD/_install"
+    make -j"$(nproc)"
     cd ../..
 else
     echo "=> coreutils already satisfied. Continuing..."
