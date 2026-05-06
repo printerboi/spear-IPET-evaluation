@@ -44,12 +44,12 @@ else
     echo "=> lz4 already satisfied. Continuing..."
 fi
 
-echo "(4/X) Installing MicroPather"
+echo "(4/X) Installing PathfindingLib"
 
-if [ ! -d "_dependencies/MicroPather" ]; then
-    git clone https://github.com/leethomason/MicroPather.git _dependencies/MicroPather
+if [ ! -d "_dependencies/PathfindingLib" ]; then
+    git clone https://github.com/Bucephalus-Studios/PathfindingLib.git _dependencies/PathfindingLib
 else
-    echo "=> MicroPather already satisfied. Continuing..."
+    echo "=> PathfindingLib already satisfied. Continuing..."
 fi
 
 echo "(5/X) Installing libtommath"
