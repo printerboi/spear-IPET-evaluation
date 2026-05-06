@@ -6,14 +6,13 @@
 #include <iostream>
 #include "cJSON.h"
 
-
-
 int main() {
     // Create the object
-    cJSON *obj = cJSON_CreateObject();
-    
+    cJSON* obj = cJSON_CreateObject();
+
     if (!obj) {
         std::cerr << "JSON Object creation failed!" << std::endl;
+        return 1;
     }
 
     // create sub objects
@@ -43,11 +42,11 @@ int main() {
 
     // Print the JSON
     char* jsonString = cJSON_Print(obj);
-    std::cout << jsonString << std::endl;
+    if (jsonString) {
+        std::cout << jsonString << std::endl;
+        cJSON_free(jsonString);
+    }
 
-    cJSON_Delete(barnardObj);
-    cJSON_Delete(alphaCentObj);
-    cJSON_Delete(sunObj);
     cJSON_Delete(obj);
 
     return 0;

@@ -44,8 +44,6 @@ $(LIBTOMMATH_BUILD_DIR)/%.bc: $(LIBTOMMATH_SRC_DIR)/%.c | $(LIBTOMMATH_BUILD_DIR
 	$(CLANGXX) -g -O0 -fPIC -Xclang -disable-O0-optnone -fno-discard-value-names -emit-llvm \
 		-c "$<" $(LIBTOMMATH_INCLUDES) -o "$@"
 
-# ---- Example pipeline (identical to your MicroPather setup) ----
-
 libtommath_examples: libtommath $(EXAMPLE_BINARIES) $(EXAMPLE_LL_FILES)
 
 $(EXAMPLE_BUILD_DIR):
