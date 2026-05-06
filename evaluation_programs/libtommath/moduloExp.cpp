@@ -21,9 +21,9 @@ int main() {
     }
 
      // Set values
-    mp_set_i32(&base, 7);
-    mp_set_i32(&exponent, 128);
-    mp_set_i32(&mod, 13);
+    mp_set_i64(&base, 7);
+    mp_set_i64(&exponent, 128);
+    mp_set_i64(&mod, 13);
 
     // multiplicationResult = secondNumber * thirdNumber
     if (mp_exptmod(&base, &exponent, &mod, &result) != MP_OKAY) {
