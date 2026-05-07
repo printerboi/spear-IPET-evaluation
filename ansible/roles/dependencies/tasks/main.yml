@@ -60,6 +60,11 @@
       - zlib1g-dev
       - coinor-cbc
       - coinor-libcbc-dev
+      - libsodium-dev
+      - liblz4-dev
+      - sqlite3
+      - libsqlite3-dev
+      - libcjson-dev
   become: true
   tags:
     - commondependencies

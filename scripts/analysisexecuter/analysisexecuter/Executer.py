@@ -15,10 +15,10 @@ CONFIG_PATH_WITH_CACHE = PROJECT_ROOT / "config_cache.json"
 PROFILE_PATH = PROJECT_ROOT / "profile.json"
 PROGRAM_PATH = PROJECT_ROOT / "evaluation_programs"
 TMP_PATH_STR = "/tmp/spear"
-CLUSTER_CACHE_PATH = PROJECT_ROOT / "cluster_cache.json"
+CLUSTER_CACHE_PATH = Path(__file__).resolve().parents[1] / "cluster_cache.json"
 
 # Constants
-REPETITIONS=50
+REPETITIONS=5
 
 
 class Executer:
@@ -51,9 +51,20 @@ class Executer:
         # Search for the .ll files in the folder where we are expecting the evaluation program files
         programs = _find_all_llfiles(PROGRAM_PATH)
 
+        print("Found programs: [")
+        for program_path in programs:
+            # Run the analysis for the found program
+            print(f"\t{program_path}")
+
+        print("]")
+
         for program_path in programs:
             # Run the analysis for the found program
             self._run_benchmark(program_path)
+
+        print(CLUSTER_CACHE_PATH)
+        self._remove_cluster_cache()
+
 
     def _run_benchmark(self, program: Path):
         """
@@ -111,7 +122,6 @@ class Executer:
             # Append results to our lists
             cached_summary_runs.append(summary_row)
             cached_function_runs.append(function_rows)
-
 
         # Aggregate all recorded values from our lists to form a comprehension table
         aggregated_summary_rows, aggregated_function_rows = self._aggregate_results(

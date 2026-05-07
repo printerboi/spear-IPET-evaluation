@@ -4,17 +4,17 @@ def _aggregate_summary_rows(filename: str, file_suffix: str, analysis_name: str,
     """
     Aggregate summary about each analysis type under the given rows
     """
-    reference_row = rows[0]
     durations = [row["duration"] for row in rows if row["duration"] is not None]
+    main_energies = [row["main_energy"] for row in rows if row["main_energy"] is not None]
 
     average_duration = int(round(sum(durations) / len(durations))) if durations else None
-    
-    # Construct aggragated row
+    average_main_energy = sum(main_energies) / len(main_energies) if main_energies else None
+
     return {
         "file": f"{filename}_{file_suffix}.json",
         "analysis": analysis_name,
         "duration": average_duration,
-        "main_energy": reference_row["main_energy"],
+        "main_energy": average_main_energy,
     }
 
 def _aggregate_function_rows(filename: str, file_suffix: str, analysis_name: str, rows: list):
@@ -51,14 +51,19 @@ def _aggregate_function_rows(filename: str, file_suffix: str, analysis_name: str
 
     return aggregated_rows
 
-def _find_all_llfiles(basepath):
+def _find_all_llfiles(base_path):
     """
-    Find all files ending in .ll recursively from the given path
+    Find all files ending in .ll recursively from the given path,
+    excluding any files inside a 'dependencies' directory.
     """
-    root_path = Path(basepath)
+    root_path = Path(base_path)
     programs = []
 
     for file_path in root_path.rglob("*.ll"):
+        # Skip files that are inside a 'dependencies' directory
+        if "_dependencies" in file_path.parts:
+            continue
+
         programs.append(file_path.resolve())
 
     return programs

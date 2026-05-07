@@ -1,0 +1,53 @@
+/*
+ * Copyright (c) 2026 Maximilian Krebs
+ * All rights reserved.
+ */
+
+#include <iostream>
+#include "cJSON.h"
+
+int main() {
+    // Create the object
+    cJSON* obj = cJSON_CreateObject();
+
+    if (!obj) {
+        std::cerr << "JSON Object creation failed!" << std::endl;
+        return 1;
+    }
+
+    // create sub objects
+    // Sun
+    cJSON* sunObj = cJSON_CreateObject();
+    cJSON_AddNumberToObject(sunObj, "radius", 1.0);
+    cJSON_AddNumberToObject(sunObj, "mass", 1.0);
+    cJSON_AddStringToObject(sunObj, "class", "yellow dwarf");
+
+    cJSON_AddItemToObject(obj, "sun", sunObj);
+
+    // Proxima Centauri
+    cJSON* alphaCentObj = cJSON_CreateObject();
+    cJSON_AddNumberToObject(alphaCentObj, "radius", 0.1542);
+    cJSON_AddNumberToObject(alphaCentObj, "mass", 0.1221);
+    cJSON_AddStringToObject(alphaCentObj, "class", "red dwarf");
+
+    cJSON_AddItemToObject(obj, "Proxima Centauri", alphaCentObj);
+
+    // Barnards Star
+    cJSON* barnardObj = cJSON_CreateObject();
+    cJSON_AddNumberToObject(barnardObj, "radius", 0.187);
+    cJSON_AddNumberToObject(barnardObj, "mass", 0.162);
+    cJSON_AddStringToObject(barnardObj, "class", "red dwarf");
+
+    cJSON_AddItemToObject(obj, "Barnards Star", barnardObj);
+
+    // Print the JSON
+    char* jsonString = cJSON_Print(obj);
+    if (jsonString) {
+        std::cout << jsonString << std::endl;
+        cJSON_free(jsonString);
+    }
+
+    cJSON_Delete(obj);
+
+    return 0;
+}
