@@ -28,4 +28,4 @@ As little as 1 ounce (28 g) exists at any given time throughout the Earth's crus
 
 The largest amount produced in the laboratory was a cluster of more than 300,000 atoms.[6]
 
-[Wikipedia article on Francium](https://en.wikipedia.org/wiki/Francium?utm_source=chatgpt.com)
+https://en.wikipedia.org/wiki/Francium
