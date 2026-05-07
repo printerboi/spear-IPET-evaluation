@@ -22,31 +22,18 @@
   when:
     - not skip_phasar
 
-
-- name: Copy Evaluation Scripts
+- name: Install Experiment Environment
   block:
-    - name: Sync scripts excluding .venv directories
-      ansible.posix.synchronize:
-        src: "{{ playbook_dir }}/../scripts/"
-        dest: "{{ prefix_path }}/scripts"
-        recursive: yes
-        rsync_opts:
-          - "--exclude=.venv"
+    - name: Clone Evaluation-Repo to the current machine
+      ansible.builtin.git:
+        repo: https://github.com/printerboi/spear-IPET-evaluation
+        dest: "{{ prefix_path }}/spear-IPET-evaluation"
+        version: "main"
+        update: true
 
-- name: Copy config
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../config.json"
-    dest: "{{ prefix_path }}/config.json"
-    mode: '0644'
+    - name: Run Installer
+      ansible.builtin.shell: |
+        ./install.sh
+      args:
+        chdir: "{{ prefix_path }}/spear-IPET-evaluation/evaluation_programs"
 
-- name: Copy cached config
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../config_cache.json"
-    dest: "{{ prefix_path }}/config_cache.json"
-    mode: '0644'
-
-- name: Copy profile
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/../profile.json"
-    dest: "{{ prefix_path }}/profile.json"
-    mode: '0644'

@@ -21,8 +21,9 @@
   tags:
     - misc
 
-- name: Disable screen blanking
-  ansible.builtin.command: gsettings set org.gnome.desktop.session idle-delay 0
+- name: Configure GNOME power settings
+  when:
+    - ansible_facts.virtualization_type not in ["docker", "containerd"]
   become: true
   become_user: spear
   environment:
@@ -30,33 +31,19 @@
     DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
   tags:
     - misc
+  block:
+    - name: Disable screen blanking
+      ansible.builtin.command:
+        cmd: gsettings set org.gnome.desktop.session idle-delay 0
 
-- name: Disable screen lock
-  ansible.builtin.command: gsettings set org.gnome.desktop.screensaver lock-enabled false
-  become: true
-  become_user: spear
-  environment:
-    DISPLAY: ":0"
-    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
-  tags:
-    - misc
+    - name: Disable screen lock
+      ansible.builtin.command:
+        cmd: gsettings set org.gnome.desktop.screensaver lock-enabled false
 
-- name: Disable sleep on AC
-  ansible.builtin.command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
-  become: true
-  become_user: spear
-  environment:
-    DISPLAY: ":0"
-    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
-  tags:
-    - misc
+    - name: Disable sleep on AC
+      ansible.builtin.command:
+        cmd: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type nothing
 
-- name: Disable sleep on battery
-  ansible.builtin.command: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type nothing
-  become: true
-  become_user: spear
-  environment:
-    DISPLAY: ":0"
-    DBUS_SESSION_BUS_ADDRESS: "unix:path=/run/user/{{ desktop_user_uid_result.stdout }}/bus"
-  tags:
-    - misc
+    - name: Disable sleep on battery
+      ansible.builtin.command:
+        cmd: gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type nothing

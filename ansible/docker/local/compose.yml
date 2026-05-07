@@ -6,14 +6,18 @@ services:
     image: spear-ansible-test
     container_name: spear-ansible-test
     working_dir: /workspace/ansible
+    user: spear:spear
     volumes:
       - ./../../../:/workspace
     stdin_open: true
     tty: true
     command:
-      - ansible-playbook
-      - -i
-      - inventory.yml
-      - site.yml
-      - --limit
-      - container_local
+      - bash
+      - -c
+      - |
+        ansible-playbook \
+          -i inventory.yml \
+          site.yml \
+          --limit container_local
+
+        exec bash
