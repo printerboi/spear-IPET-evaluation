@@ -2,7 +2,8 @@
 
 # Installing Section
 
-SKIPBUILD=true
+SKIPBUILD=false
+CLEANBUILD=true
 
 echo "Downloading evaluation programs..."
 
@@ -83,9 +84,54 @@ fi
 
 # BUILDING Section
 
+if [ "$CLEANBUILD" = true ]; then
+    echo "(1/X) Removing Libsodium"
+    cd Libsodium && rm -r .build/
+    cd ..
 
-# if [ "$SKIPBUILD" = false ]; then
-#     echo "(7/X) Building Libsodium"
-#     mkdir -p _dependencies/.build/libsodium
-#     cd Libsodium && make libsodium
-# fi
+    echo "(2/X) Removing LZ4"
+    cd lz4 && rm -r .build/
+    cd ..
+
+    echo "(3/X) Removing PathfindingLib"
+    cd PathfindingLib && rm -r .build/
+    cd ..
+
+    echo "(4/X) Removing Libtommath"
+    cd libtommath && rm -r .build/
+    cd ..
+
+    echo "(5/X) Removing cJSON"
+    cd cJSON && rm -r .build/
+    cd ..
+
+    echo "(6/X) Removing Coreutils"
+    cd coreutils && rm -r .build/
+    cd ..
+fi
+
+if [ "$SKIPBUILD" = false ]; then
+    echo "(1/X) Building Libsodium"
+    cd Libsodium && make libsodium && make libsodium_examples
+    cd ..
+
+    echo "(2/X) Building LZ4"
+    cd lz4 && make lz4 && make lz4_examples
+    cd ..
+
+    echo "(3/X) Building PathfindingLib"
+    cd PathfindingLib && make pathfindinglib_examples
+    cd ..
+
+    echo "(4/X) Building Libtommath"
+    cd libtommath && make libtommath && make libtommath_examples
+    cd ..
+
+    echo "(5/X) Building cJSON"
+    cd cJSON && make cjson && make cjson_examples
+    cd ..
+
+    echo "(6/X) Building Coreutils"
+    cd coreutils && make coreutils
+    cd ..
+fi

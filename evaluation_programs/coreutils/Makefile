@@ -13,8 +13,9 @@ COREUTILS_ROOT_DIR := ../_dependencies/coreutils
 COREUTILS_SRC_DIR := $(COREUTILS_ROOT_DIR)/src
 COREUTILS_LIB_DIR := $(COREUTILS_ROOT_DIR)/lib
 
-COREUTILS_BUILD_DIR := ../_dependencies/.build/coreutils
-COREUTILS_OBJECT_DIR := $(COREUTILS_BUILD_DIR)/objects
+COREUTILS_BUILD_DIR := .build
+COREUTIL_ORIGIN_DIR := ../_dependencies/.build/coreutils
+COREUTILS_OBJECT_DIR := $(COREUTIL_ORIGIN_DIR)/objects
 
 COREUTILS_DEFINES := \
 	-D_GNU_SOURCE

@@ -51,6 +51,13 @@ class Executer:
         # Search for the .ll files in the folder where we are expecting the evaluation program files
         programs = _find_all_llfiles(PROGRAM_PATH)
 
+        print("Found programs: [")
+        for program_path in programs:
+            # Run the analysis for the found program
+            print(f"\t{program_path}")
+
+        print("]")
+
         for program_path in programs:
             # Run the analysis for the found program
             self._run_benchmark(program_path)

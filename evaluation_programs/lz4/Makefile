@@ -97,11 +97,15 @@ $(EXAMPLE_BUILD_DIR)/%_combined_optimized.bc: $(EXAMPLE_BUILD_DIR)/%_combined_fu
 		-o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_optimized.bc
-	$(LLVM_EXTRACT) \
-		-delete \
-		$(addprefix -func=,$(EXCLUDED_ANALYSIS_FUNCTIONS)) \
-		"$<" \
-		-o "$@"
+	if $(LLVM_DIS) "$<" -o - | grep -q 'define .*@LZ4HC_compress_generic_internal('; then \
+		$(LLVM_EXTRACT) \
+			-delete \
+			$(addprefix -func=,$(EXCLUDED_ANALYSIS_FUNCTIONS)) \
+			"$<" \
+			-o "$@"; \
+	else \
+		cp "$<" "$@"; \
+	fi
 
 $(EXAMPLE_BUILD_DIR)/%.ll: $(EXAMPLE_BUILD_DIR)/%_combined.bc
 	$(LLVM_DIS) "$<" -o "$@"

@@ -61,7 +61,7 @@ def _find_all_llfiles(base_path):
 
     for file_path in root_path.rglob("*.ll"):
         # Skip files that are inside a 'dependencies' directory
-        if "dependencies" in file_path.parts:
+        if "_dependencies" in file_path.parts:
             continue
 
         programs.append(file_path.resolve())
