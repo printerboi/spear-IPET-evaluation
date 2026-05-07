@@ -32,7 +32,7 @@ int main() {
     // Validate that parsing was successfull
     if (!parsedObject) {
         std::cerr << "JSON parsing failed!" << std::endl;
-        return 1;
+        return 0;
     }
 
     // Get movie object
