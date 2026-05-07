@@ -10,9 +10,9 @@ import pandas as pd
 # Paths
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATA_DIR = PROJECT_ROOT / "data"
-CONFIG_PATH_WITHOUT_CACHE = PROJECT_ROOT / "config.json"
-CONFIG_PATH_WITH_CACHE = PROJECT_ROOT / "config_cache.json"
-PROFILE_PATH = PROJECT_ROOT / "profile.json"
+CONFIG_PATH_WITHOUT_CACHE = PROJECT_ROOT / "config" / "config.json"
+CONFIG_PATH_WITH_CACHE = PROJECT_ROOT / "config" / "config_cache.json"
+PROFILE_PATH = PROJECT_ROOT / "config" / "profile.json"
 PROGRAM_PATH = PROJECT_ROOT / "evaluation_programs"
 TMP_PATH_STR = "/tmp/spear"
 CLUSTER_CACHE_PATH = Path(__file__).resolve().parents[1] / "cluster_cache.json"
