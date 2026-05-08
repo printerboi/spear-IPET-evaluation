@@ -18,7 +18,7 @@ TMP_PATH_STR = "/tmp/spear"
 CLUSTER_CACHE_PATH = Path(__file__).resolve().parents[1] / "cluster_cache.json"
 
 # Constants
-REPETITIONS=5
+REPETITIONS=25
 
 
 class Executer:
