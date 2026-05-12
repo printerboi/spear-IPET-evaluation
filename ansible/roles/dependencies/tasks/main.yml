@@ -65,6 +65,7 @@
       - sqlite3
       - libsqlite3-dev
       - libcjson-dev
+      - libssl-dev
   become: true
   tags:
     - commondependencies
@@ -78,10 +79,10 @@
     group: spear
     mode: '0755'
 
-- name: Check if Phasar is installed
-  ansible.builtin.stat:
-    path: /usr/local/bin/phasar-cli
-  register: phasar_installed
+# - name: Check if Phasar is installed
+#   ansible.builtin.stat:
+#     path: /usr/local/bin/phasar-cli
+#   register: phasar_installed
 
 - name: Install Phasar
   block:
@@ -129,5 +130,5 @@
       register: phasar_install
       changed_when: true
   when:
-    - not phasar_installed.stat.exists
+    # - not phasar_installed.stat.exists
     - not skip_phasar

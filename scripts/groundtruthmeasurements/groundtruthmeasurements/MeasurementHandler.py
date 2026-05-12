@@ -8,7 +8,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 DATA_DIR = PROJECT_ROOT / "data"
 
-DATAPOINTS=100
+DATAPOINTS=10
 REPETITIONS=100
 
 class MeasurementHandler:
