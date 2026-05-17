@@ -86,6 +86,11 @@
 
 - name: Install Phasar
   block:
+    - name: Check whether Phasar folder exists
+      ansible.builtin.stat:
+        path: "{{ prefix_path }}/phasar"
+      register: phasar_source_directory
+
     - name: Get Phasar from git
       ansible.builtin.git:
         repo: https://github.com/secure-software-engineering/phasar.git
@@ -93,6 +98,7 @@
         version: v2604
         recursive: true
         update: true
+      when: not phasar_source_directory.stat.exists
 
     - name: Patch LLVM Version
       ansible.builtin.replace:
@@ -130,5 +136,4 @@
       register: phasar_install
       changed_when: true
   when:
-    # - not phasar_installed.stat.exists
     - not skip_phasar
