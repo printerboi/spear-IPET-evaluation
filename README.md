@@ -109,10 +109,66 @@ sudo .venv/bin/python main.py <Name of the eval device>
 ```
 Choose a meaningful and unique name for `<Name of the eval device>`. The name will be used to store the data generated during the evaluation.
 
-After the evaluation is done, the results can be found in `/opt/sselabs/data`
+After the evaluation is done, the results can be found in `/opt/sselabs/data/<Name of the eval device>/profile`. The folder `raw` stores all recorded raw profiles during the evaluation.
+The file `cpu_stats.csv` provides a summary over all recorded CPU profiles. Additionally, the file `syscall_stats.csv` describes a summary of all system call related values.
 
 ### Running the Analysis Evaluation
 
+The analysis can be evaluated using the script `analysisexecuter`.
+Navigate into the subfolder:
+```
+cd scripts/analysisexecuter
+```
+Create a virtual environment and source it
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+Install the needed dependencies
+```
+pip install -r requirements.txt
+```
+Run the script using:
+```
+sudo .venv/bin/python main.py <Name of the eval device>
+```
+Choose a meaningful and unique name for `<Name of the eval device>`. The name will be used to store the data generated during the evaluation.
+
+After the evaluation is done, the results can be found in `/opt/sselabs/data/<Name of the eval device>/analysis`. The analysis folder contains the recorded values in the folder `raw`.
+Comprehensive tables are provided as `.csv` format for each program under analysis. `<program name>_analysis_functions.csv` provides an overview over all analyzed functions.
+For each analysis method `legacy`, `clustered`, `monolithic` and `clustered cached`, the analyzed energy value as well as information about the ILPs (if used by the
+method) are provided. Additionally, the file `<program name>_analysis_summary` provides a summary of energy calculated for the `main` function of the program for each analysis method.
+
+### Running the RAPL Measurement
+
+The analysis can be evaluated using the script `groundtruthmeasurements`.
+Navigate into the subfolder:
+```
+cd scripts/groundtruthmeasurements
+```
+Create a virtual environment and source it
+```
+python -m venv .venv
+source .venv/bin/activate
+```
+Install the needed dependencies
+```
+pip install -r requirements.txt
+```
+Run the script using:
+```
+sudo .venv/bin/python main.py <Name of the eval device>
+```
+Choose a meaningful and unique name for `<Name of the eval device>`. The name will be used to store the data generated during the evaluation.
+
+After the evaluation is done, the results can be found in `/opt/sselabs/data/<Name of the eval device>/measurements/raw`. Each program under analysis is indexed. The results recorded
+during the measurement are stored for each program in the folder with the respective id. In each id-folder two `.csv` files are stored. `result.csv` stores the recorded energy values and
+execution durations of the measurement. The file `statistics.csv` stores a summary over the resulted values.
+
 ## Collecting Data
+
+In order to collect data, make sure the needed tools are installed. Use the provided ansible script to simplify the installation process. For each device that should be evaluated
+create a unique identifier that will be used to store the results. Make sure the evaluation device runs a clean OS-Install with no other programs than stock Ubuntu 24.04 and the 
+software provided by this evaluation.
 
 ## Our collected data
