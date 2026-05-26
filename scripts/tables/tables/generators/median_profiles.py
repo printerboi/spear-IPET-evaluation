@@ -58,6 +58,28 @@ class MedianProfileInstructionEnergyTable:
 
         merged_dataframe = merged_dataframe.sort_values("instruction").reset_index(drop=True)
 
+        minimum_row = {
+            "instruction": "Min",
+        }
+
+        maximum_row = {
+            "instruction": "Max",
+        }
+
+        for device_index in range(1, 6):
+            column_name = f"D{device_index}"
+
+            minimum_row[column_name] = merged_dataframe[column_name].min()
+            maximum_row[column_name] = merged_dataframe[column_name].max()
+
+        merged_dataframe = pd.concat(
+            [
+                merged_dataframe,
+                pd.DataFrame([minimum_row, maximum_row]),
+            ],
+            ignore_index=True,
+        )
+
         return merged_dataframe
 
     def generate_table(self, dataframe):
@@ -76,10 +98,15 @@ class MedianProfileInstructionEnergyTable:
             + "@{}"
         )
 
-        table_rows = "\n".join(
-            self.create_latex_row(row)
-            for _, row in dataframe.iterrows()
-        )
+        latex_rows = []
+
+        for _, row in dataframe.iterrows():
+            if row["Instruction"] == "Min":
+                latex_rows.append(r"\midrule")
+
+            latex_rows.append(self.create_latex_row(row))
+
+        table_rows = "\n".join(latex_rows)
 
         latex_table = rf"""\begin{{longtable}}{{{column_format}}}
         \label{{tab:instruction_medians}} \\
@@ -109,7 +136,8 @@ class MedianProfileInstructionEnergyTable:
         \endfoot
 
         \bottomrule
-        \caption{{Median energy values per instruction and device}}
+        \caption{{Median energy values per instruction and device. The last two
+        rows shows the minimum and maximum value over the instruction set for the respective device. Values in Joule}}
         \endlastfoot
 
         {table_rows}
@@ -133,3 +161,4 @@ class MedianProfileInstructionEnergyTable:
 
         print(f"Saved CSV to {output_csv_path}")
         print(f"Saved LaTeX table to {output_tex_path}")
+

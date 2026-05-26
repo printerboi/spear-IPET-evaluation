@@ -14,16 +14,16 @@ class AnalysisRuntimeTable:
 
     analysis_order = [
         ("legacy", "Legacy"),
-        ("clustered", "Clustered"),
         ("monolithic", "Monolithic"),
+        ("clustered", "Clustered"),
     ]
 
     def create_latex_row(self, row: pd.Series) -> str:
         values = [
             format_program_name(str(row["Program"])),
             format_milliseconds(row["Legacy"]),
-            format_milliseconds(row["Clustered"]),
             format_milliseconds(row["Monolithic"]),
+            format_milliseconds(row["Clustered"]),
             format_milliseconds(row["Clustered cached"]),
         ]
 
@@ -49,19 +49,19 @@ class AnalysisRuntimeTable:
 
 \toprule
 Program &
-\multicolumn{{1}}{{c}}{{Legacy (ms)}} &
-\multicolumn{{1}}{{c}}{{Clustered (ms)}} &
-\multicolumn{{1}}{{c}}{{Monolithic (ms)}} &
-\multicolumn{{1}}{{c}}{{Clustered cached (ms)}} \\
+\multicolumn{{1}}{{c}}{{Legacy}} &
+\multicolumn{{1}}{{c}}{{Monolithic}} &
+\multicolumn{{1}}{{c}}{{Clustered}} &
+\multicolumn{{1}}{{c}}{{Clustered cached}} \\
 \midrule
 \endfirsthead
 
 \toprule
 Program &
-\multicolumn{{1}}{{c}}{{Legacy (ms)}} &
-\multicolumn{{1}}{{c}}{{Clustered (ms)}} &
-\multicolumn{{1}}{{c}}{{Monolithic (ms)}} &
-\multicolumn{{1}}{{c}}{{Clustered cached (ms)}} \\
+\multicolumn{{1}}{{c}}{{Legacy}} &
+\multicolumn{{1}}{{c}}{{Monolithic}} &
+\multicolumn{{1}}{{c}}{{Clustered}} &
+\multicolumn{{1}}{{c}}{{Clustered cached}} \\
 \midrule
 \endhead
 
@@ -114,7 +114,7 @@ Program &
         duration_dataframe = pd.DataFrame(analysis_rows)
 
         return duration_dataframe[
-            ["Program", "Legacy", "Clustered", "Monolithic", "Clustered cached"]
+            ["Program", "Legacy", "Monolithic", "Clustered", "Clustered cached"]
         ]
 
     def generate(self):

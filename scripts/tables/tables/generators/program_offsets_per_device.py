@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tables.util.Utility import format_decimal, format_scientific, get_result_dir
+from tables.util.Utility import format_scientific, get_result_dir
 
 
 class ProgramOffsetPerDeviceTable:
@@ -11,10 +11,8 @@ class ProgramOffsetPerDeviceTable:
     def create_latex_row(self, row: pd.Series) -> str:
         values = [
             str(row["Device"]),
-            str(row["Instruction"]),
             format_scientific(row["Median"]),
             format_scientific(row["Std"]),
-            format_decimal(row["CoV"]),
         ]
 
         return " & ".join(values) + r" \\"
@@ -32,20 +30,17 @@ class ProgramOffsetPerDeviceTable:
 
             offset_rows.append({
                 "Device": f"D{device_index}",
-                "Instruction": "programoffset",
                 "Median": offset_row["median_value"],
                 "Std": offset_row["std_value"],
-                "CoV": offset_row["coefficient_of_variation"],
             })
 
         return pd.DataFrame(offset_rows)
 
     def generate_table(self, offset_dataframe):
         column_format = (
-            "@{}ll"
+            "@{}l"
             "S[table-format=1.3e-2]"
             "S[table-format=1.3e-2]"
-            "S[table-format=1.2]"
             "@{}"
         )
 
@@ -59,28 +54,24 @@ class ProgramOffsetPerDeviceTable:
 
 \toprule
 Device &
-Instruction &
 \multicolumn{{1}}{{c}}{{Median}} &
-\multicolumn{{1}}{{c}}{{Std}} &
-\multicolumn{{1}}{{c}}{{CoV}} \\
+\multicolumn{{1}}{{c}}{{Std}} \\
 \midrule
 \endfirsthead
 
 \toprule
 Device &
-Instruction &
 \multicolumn{{1}}{{c}}{{Median}} &
-\multicolumn{{1}}{{c}}{{Std}} &
-\multicolumn{{1}}{{c}}{{CoV}} \\
+\multicolumn{{1}}{{c}}{{Std}} \\
 \midrule
 \endhead
 
 \midrule
-\multicolumn{{5}}{{r}}{{Continued on next page}} \\
+\multicolumn{{3}}{{r}}{{Continued on next page}} \\
 \endfoot
 
 \bottomrule
-\caption{{Program offset statistics per device}}
+\caption{{Program offset statistics per device. Median and standard deviation in Joule.}}
 \endlastfoot
 
 {table_rows}

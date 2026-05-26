@@ -1,8 +1,8 @@
 from pathlib import Path
 
-from tables.util.Utility import format_program_name, format_scientific, get_result_dir
-
 import pandas as pd
+
+from tables.util.Utility import format_program_name, format_scientific, get_result_dir
 
 
 class AnalysisResultTable:
@@ -18,7 +18,7 @@ class AnalysisResultTable:
         ]
 
         return " & ".join(values) + r" \\"
-    
+
     def create_table(self, dataframe):
         column_format = (
             "@{}l"
@@ -28,10 +28,15 @@ class AnalysisResultTable:
             "@{}"
         )
 
-        table_rows = "\n".join(
-            self.create_latex_row(row)
-            for _, row in dataframe.iterrows()
-        )
+        latex_rows = []
+
+        for _, row in dataframe.iterrows():
+            if row["Program"] == "Min":
+                latex_rows.append(r"\midrule")
+
+            latex_rows.append(self.create_latex_row(row))
+
+        table_rows = "\n".join(latex_rows)
 
         latex_table = rf"""\begin{{longtable}}{{{column_format}}}
         \label{{tab:program_energy}} \\
@@ -57,7 +62,9 @@ class AnalysisResultTable:
         \endfoot
 
         \bottomrule
-        \caption{{Main energy values per benchmark}}
+        \caption{{Energy of the \texttt{{main}} function for each evaluation
+        program. The last two rows shows the minimum and maximum value over all
+        programs for the respective method. All values in Joule.}}
         \endlastfoot
 
         {table_rows}
@@ -65,7 +72,7 @@ class AnalysisResultTable:
         \end{{longtable}}
         """
 
-        return (latex_table)
+        return latex_table
 
     def generate(self):
         analysis_rows = []
@@ -99,12 +106,32 @@ class AnalysisResultTable:
             ["Program", "Legacy", "Monolithic", "Clustered"]
         ]
 
+        minimum_row = {
+            "Program": "Min",
+            "Legacy": energy_dataframe["Legacy"].min(),
+            "Monolithic": energy_dataframe["Monolithic"].min(),
+            "Clustered": energy_dataframe["Clustered"].min(),
+        }
+
+        maximum_row = {
+            "Program": "Max",
+            "Legacy": energy_dataframe["Legacy"].max(),
+            "Monolithic": energy_dataframe["Monolithic"].max(),
+            "Clustered": energy_dataframe["Clustered"].max(),
+        }
+
+        energy_dataframe = pd.concat(
+            [
+                energy_dataframe,
+                pd.DataFrame([minimum_row, maximum_row]),
+            ],
+            ignore_index=True,
+        )
+
         output_csv_path = self.result_directory / "program_energy.csv"
         energy_dataframe.to_csv(output_csv_path, index=False)
 
-
-        (latex_table) = self.create_table(energy_dataframe)
-
+        latex_table = self.create_table(energy_dataframe)
 
         output_tex_path = self.result_directory / "program_energy.tex"
 
@@ -113,6 +140,4 @@ class AnalysisResultTable:
 
         print(f"Saved CSV to {output_csv_path}")
         print(f"Saved LaTeX table to {output_tex_path}")
-
-
 
