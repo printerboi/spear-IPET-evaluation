@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tables.util.Utility import get_result_dir, format_milliseconds, format_program_name
+from tables.util.Utility import format_milliseconds, format_program_name, get_result_dir
 
 
 device_id = 2
@@ -39,10 +39,15 @@ class AnalysisRuntimeTable:
             "@{}"
         )
 
-        table_rows = "\n".join(
-            self.create_latex_row(row)
-            for _, row in duration_dataframe.iterrows()
-        )
+        latex_rows = []
+
+        for _, row in duration_dataframe.iterrows():
+            if row["Program"] == "Min":
+                latex_rows.append(r"\midrule")
+
+            latex_rows.append(self.create_latex_row(row))
+
+        table_rows = "\n".join(latex_rows)
 
         return rf"""\begin{{longtable}}{{{column_format}}}
 \label{{tab:device0{device_id}_program_duration}} \\
@@ -52,7 +57,7 @@ Program &
 \multicolumn{{1}}{{c}}{{Legacy}} &
 \multicolumn{{1}}{{c}}{{Monolithic}} &
 \multicolumn{{1}}{{c}}{{Clustered}} &
-\multicolumn{{1}}{{c}}{{Clustered cached}} \\
+\multicolumn{{1}}{{c}}{{Cached}} \\
 \midrule
 \endfirsthead
 
@@ -61,7 +66,7 @@ Program &
 \multicolumn{{1}}{{c}}{{Legacy}} &
 \multicolumn{{1}}{{c}}{{Monolithic}} &
 \multicolumn{{1}}{{c}}{{Clustered}} &
-\multicolumn{{1}}{{c}}{{Clustered cached}} \\
+\multicolumn{{1}}{{c}}{{Cached}} \\
 \midrule
 \endhead
 
@@ -70,7 +75,7 @@ Program &
 \endfoot
 
 \bottomrule
-\caption{{Analysis duration per program for device D{device_id}}}
+\caption{{Mean analysis duration per program for device D{device_id}. The summary rows show the minimum, median, and maximum duration over all programs for the respective method. All values in milliseconds.}}
 \endlastfoot
 
 {table_rows}
@@ -84,7 +89,11 @@ Program &
         for csv_path in sorted(self.analysis_directory.glob("*_summary.csv")):
             summary_dataframe = pd.read_csv(csv_path)
 
-            program_name = csv_path.stem.removesuffix("_summary").removesuffix("_analysis")
+            program_name = (
+                csv_path.stem
+                .removesuffix("_summary")
+                .removesuffix("_analysis")
+            )
 
             duration_values = {
                 "Program": program_name,
@@ -113,12 +122,48 @@ Program &
 
         duration_dataframe = pd.DataFrame(analysis_rows)
 
+        duration_dataframe = duration_dataframe[
+            ~duration_dataframe["Program"].str.startswith("benchmark")
+        ]
+
         return duration_dataframe[
             ["Program", "Legacy", "Monolithic", "Clustered", "Clustered cached"]
         ]
 
+    def add_summary_rows(self, duration_dataframe: pd.DataFrame) -> pd.DataFrame:
+        numeric_columns = [
+            "Legacy",
+            "Monolithic",
+            "Clustered",
+            "Clustered cached",
+        ]
+
+        minimum_row = {"Program": "Min"}
+        median_row = {"Program": "Median"}
+        maximum_row = {"Program": "Max"}
+
+        for column_name in numeric_columns:
+            minimum_row[column_name] = duration_dataframe[column_name].min()
+            median_row[column_name] = duration_dataframe[column_name].median()
+            maximum_row[column_name] = duration_dataframe[column_name].max()
+
+        return pd.concat(
+            [
+                duration_dataframe,
+                pd.DataFrame(
+                    [
+                        minimum_row,
+                        median_row,
+                        maximum_row,
+                    ]
+                ),
+            ],
+            ignore_index=True,
+        )
+
     def generate(self):
         duration_dataframe = self.create_duration_dataframe()
+        duration_dataframe = self.add_summary_rows(duration_dataframe)
 
         output_csv_path = self.result_directory / f"device0{device_id}_program_duration_ms.csv"
         duration_dataframe.to_csv(output_csv_path, index=False)

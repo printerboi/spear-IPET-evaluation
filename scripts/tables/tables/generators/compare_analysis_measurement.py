@@ -1,10 +1,14 @@
 from pathlib import Path
-import math
-
-from tables.util.Programs import get_selected_programs
-from tables.util.Utility import format_scientific, format_program_name, calculate_magnitude_difference, get_result_dir
 
 import pandas as pd
+
+from tables.util.Programs import get_selected_programs
+from tables.util.Utility import (
+    calculate_magnitude_difference,
+    format_program_name,
+    format_scientific,
+    get_result_dir,
+)
 
 device_index = 5
 
@@ -32,8 +36,11 @@ class AnalysisComparisonTable:
 
         return mean_row.iloc[0]["Energy"]
 
-
-    def read_analysis_energy(self, program_name: str, analysis_name: str) -> float | None:
+    def read_analysis_energy(
+        self,
+        program_name: str,
+        analysis_name: str,
+    ) -> float | None:
         summary_path = Path(
             f"../../data/device0{device_index}/analysis/{program_name}_summary.csv"
         )
@@ -56,7 +63,7 @@ class AnalysisComparisonTable:
             return None
 
         return analysis_row.iloc[0]["main_energy"]
-    
+
     def create_latex_row(self, row: pd.Series) -> str:
         values = [
             format_program_name(str(row["Program"])),
@@ -69,7 +76,42 @@ class AnalysisComparisonTable:
 
         return " & ".join(values) + r" \\"
 
-    def generate_dataframe(self):
+    def add_summary_rows(
+        self,
+        comparison_dataframe: pd.DataFrame,
+    ) -> pd.DataFrame:
+        numeric_columns = [
+            "Measurement",
+            "Legacy",
+            "Legacy Magnitude Difference",
+            "Clustered",
+            "Clustered Magnitude Difference",
+        ]
+
+        minimum_row = {"Program": "Min"}
+        median_row = {"Program": "Median"}
+        maximum_row = {"Program": "Max"}
+
+        for column_name in numeric_columns:
+            minimum_row[column_name] = comparison_dataframe[column_name].min()
+            median_row[column_name] = comparison_dataframe[column_name].median()
+            maximum_row[column_name] = comparison_dataframe[column_name].max()
+
+        return pd.concat(
+            [
+                comparison_dataframe,
+                pd.DataFrame(
+                    [
+                        minimum_row,
+                        median_row,
+                        maximum_row,
+                    ]
+                ),
+            ],
+            ignore_index=True,
+        )
+
+    def generate_dataframe(self) -> pd.DataFrame:
         comparison_rows = []
 
         for program_index, program_name in enumerate(self.program_names):
@@ -81,9 +123,15 @@ class AnalysisComparisonTable:
                 "Program": program_name,
                 "Measurement": measurement,
                 "Legacy": legacy,
-                "Legacy Magnitude Difference": calculate_magnitude_difference(measurement, legacy),
+                "Legacy Magnitude Difference": calculate_magnitude_difference(
+                    measurement,
+                    legacy,
+                ),
                 "Clustered": clustered,
-                "Clustered Magnitude Difference": calculate_magnitude_difference(measurement, clustered),
+                "Clustered Magnitude Difference": calculate_magnitude_difference(
+                    measurement,
+                    clustered,
+                ),
             })
 
         comparison_dataframe = pd.DataFrame(comparison_rows)
@@ -99,23 +147,28 @@ class AnalysisComparisonTable:
             ]
         ]
 
-        return comparison_dataframe
+        return self.add_summary_rows(comparison_dataframe)
 
-    def generate_table(self, dataframe):
+    def generate_table(self, dataframe: pd.DataFrame) -> str:
         column_format = (
             "@{}l"
             "S[table-format=1.3e-2]"
             "S[table-format=1.3e-2]"
-            "S[table-format=2.2]"
             "S[table-format=1.3e-2]"
-            "S[table-format=2.2]"
+            "S[table-format=1.3e-2]"
+            "S[table-format=1.3e-2]"
             "@{}"
         )
 
-        table_rows = "\n".join(
-            self.create_latex_row(row)
-            for _, row in dataframe.iterrows()
-        )
+        latex_rows = []
+
+        for _, row in dataframe.iterrows():
+            if row["Program"] == "Min":
+                latex_rows.append(r"\midrule")
+
+            latex_rows.append(self.create_latex_row(row))
+
+        table_rows = "\n".join(latex_rows)
 
         latex_table = rf"""\begin{{longtable}}{{{column_format}}}
         \label{{tab:device05_analysis_vs_measurement_magnitude_difference}} \\
@@ -145,7 +198,9 @@ class AnalysisComparisonTable:
         \endfoot
 
         \bottomrule
-        \caption{{Order of magnitude difference between analysis results and measured energy for device D5}}
+        \caption{{Order of magnitude difference between analysis results and
+        measured mean energy for device D5. The summary rows show the minimum,
+        median, and maximum values over all programs.}}
         \endlastfoot
 
         {table_rows}
@@ -153,16 +208,23 @@ class AnalysisComparisonTable:
         \end{{longtable}}
         """
 
-        return (latex_table)
+        return latex_table
 
     def generate(self):
-        output_csv_path = self.result_directory / f"device0{device_index}_analysis_vs_measurement_magnitude_difference.csv"
+        output_csv_path = (
+            self.result_directory
+            / f"device0{device_index}_analysis_vs_measurement_magnitude_difference.csv"
+        )
+
         comparison_dataframe = self.generate_dataframe()
         comparison_dataframe.to_csv(output_csv_path, index=False)
 
-        (latex_table) = self.generate_table(comparison_dataframe)
+        latex_table = self.generate_table(comparison_dataframe)
 
-        output_tex_path = self.result_directory / f"device0{device_index}_analysis_vs_measurement_magnitude_difference.tex"
+        output_tex_path = (
+            self.result_directory
+            / f"device0{device_index}_analysis_vs_measurement_magnitude_difference.tex"
+        )
 
         with open(output_tex_path, "w", encoding="utf-8") as file:
             file.write(latex_table)

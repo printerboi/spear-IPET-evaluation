@@ -2,8 +2,8 @@ from pathlib import Path
 
 import pandas as pd
 
-from tables.util.Utility import get_result_dir, format_scientific
 from tables.util.Programs import program_names
+from tables.util.Utility import format_scientific, get_result_dir
 
 
 class MeasurementPerDeviceTable:
@@ -44,10 +44,15 @@ class MeasurementPerDeviceTable:
             "@{}"
         )
 
-        table_rows = "\n".join(
-            self.create_latex_row(row)
-            for _, row in measurement_dataframe.iterrows()
-        )
+        latex_rows = []
+
+        for _, row in measurement_dataframe.iterrows():
+            if row["Program"] == "Min":
+                latex_rows.append(r"\midrule")
+
+            latex_rows.append(self.create_latex_row(row))
+
+        table_rows = "\n".join(latex_rows)
 
         return rf"""\begin{{longtable}}{{{column_format}}}
 \label{{tab:measured_energy_per_device}} \\
@@ -77,13 +82,39 @@ Program &
 \endfoot
 
 \bottomrule
-\caption{{Measured mean energy per benchmark and device}}
+\caption{{Measured mean energy per program and device. The summary rows show the minimum, median, and maximum measured mean energy over all programs for each device. Values in Joule.}}
 \endlastfoot
 
 {table_rows}
 
 \end{{longtable}}
 """
+
+    def add_summary_rows(self, measurement_dataframe: pd.DataFrame) -> pd.DataFrame:
+        numeric_columns = ["D1", "D2", "D3", "D4", "D5"]
+
+        minimum_row = {"Program": "Min"}
+        median_row = {"Program": "Median"}
+        maximum_row = {"Program": "Max"}
+
+        for column_name in numeric_columns:
+            minimum_row[column_name] = measurement_dataframe[column_name].min()
+            median_row[column_name] = measurement_dataframe[column_name].median()
+            maximum_row[column_name] = measurement_dataframe[column_name].max()
+
+        return pd.concat(
+            [
+                measurement_dataframe,
+                pd.DataFrame(
+                    [
+                        minimum_row,
+                        median_row,
+                        maximum_row,
+                    ]
+                ),
+            ],
+            ignore_index=True,
+        )
 
     def create_measurement_dataframe(self) -> pd.DataFrame:
         measurement_rows = []
@@ -117,9 +148,11 @@ Program &
 
         measurement_dataframe = pd.DataFrame(measurement_rows)
 
-        return measurement_dataframe[
+        measurement_dataframe = measurement_dataframe[
             ["Program", "D1", "D2", "D3", "D4", "D5"]
         ]
+
+        return self.add_summary_rows(measurement_dataframe)
 
     def generate(self):
         measurement_dataframe = self.create_measurement_dataframe()
@@ -136,3 +169,4 @@ Program &
 
         print(f"Saved CSV to {output_csv_path}")
         print(f"Saved LaTeX table to {output_tex_path}")
+        

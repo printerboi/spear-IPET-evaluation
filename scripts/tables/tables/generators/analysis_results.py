@@ -2,7 +2,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from tables.util.Utility import format_program_name, format_scientific, get_result_dir
+from tables.util.Utility import (
+    format_program_name,
+    format_scientific,
+    get_result_dir,
+)
 
 
 class AnalysisResultTable:
@@ -15,13 +19,15 @@ class AnalysisResultTable:
             format_scientific(row["Legacy"]),
             format_scientific(row["Monolithic"]),
             format_scientific(row["Clustered"]),
+            format_scientific(row["Cached"]),
         ]
 
         return " & ".join(values) + r" \\"
 
-    def create_table(self, dataframe):
+    def create_table(self, dataframe: pd.DataFrame) -> str:
         column_format = (
             "@{}l"
+            "S[table-format=1.3e-2]"
             "S[table-format=1.3e-2]"
             "S[table-format=1.3e-2]"
             "S[table-format=1.3e-2]"
@@ -45,7 +51,8 @@ class AnalysisResultTable:
         Program &
         \multicolumn{{1}}{{c}}{{Legacy}} &
         \multicolumn{{1}}{{c}}{{Monolithic}} &
-        \multicolumn{{1}}{{c}}{{Clustered}} \\
+        \multicolumn{{1}}{{c}}{{Clustered}} &
+        \multicolumn{{1}}{{c}}{{Cached}} \\
         \midrule
         \endfirsthead
 
@@ -53,18 +60,19 @@ class AnalysisResultTable:
         Program &
         \multicolumn{{1}}{{c}}{{Legacy}} &
         \multicolumn{{1}}{{c}}{{Monolithic}} &
-        \multicolumn{{1}}{{c}}{{Clustered}} \\
+        \multicolumn{{1}}{{c}}{{Clustered}} &
+        \multicolumn{{1}}{{c}}{{Cached}} \\
         \midrule
         \endhead
 
         \midrule
-        \multicolumn{{4}}{{r}}{{Continued on next page}} \\
+        \multicolumn{{5}}{{r}}{{Continued on next page}} \\
         \endfoot
 
         \bottomrule
         \caption{{Energy of the \texttt{{main}} function for each evaluation
-        program. The last two rows shows the minimum and maximum value over all
-        programs for the respective method. All values in Joule.}}
+        program. The summary rows show the minimum, median, and maximum value
+        over all programs for the respective method. All values in Joule.}}
         \endlastfoot
 
         {table_rows}
@@ -74,36 +82,65 @@ class AnalysisResultTable:
 
         return latex_table
 
+    def get_main_energy_by_file_suffix(
+        self,
+        summary_dataframe: pd.DataFrame,
+        file_suffix: str,
+    ):
+        matching_rows = summary_dataframe[
+            summary_dataframe["file"].str.endswith(file_suffix, na=False)
+        ]
+
+        if matching_rows.empty:
+            return None
+
+        return matching_rows.iloc[0]["main_energy"]
+
     def generate(self):
         analysis_rows = []
-
-        analysis_order = ["legacy", "monolithic", "clustered"]
 
         for csv_path in sorted(self.analysis_directory.glob("*_summary.csv")):
             summary_dataframe = pd.read_csv(csv_path)
 
-            program_name = csv_path.stem.removesuffix("_summary").removesuffix("_analysis")
+            program_name = (
+                csv_path.stem
+                .removesuffix("_summary")
+                .removesuffix("_analysis")
+            )
 
-            energy_values = {
+            if program_name.startswith("benchmark"):
+                continue
+
+            analysis_rows.append({
                 "Program": program_name,
-            }
-
-            for analysis_name in analysis_order:
-                matching_rows = summary_dataframe[
-                    summary_dataframe["analysis"] == analysis_name
-                ]
-
-                if matching_rows.empty:
-                    energy_values[analysis_name.capitalize()] = None
-                else:
-                    energy_values[analysis_name.capitalize()] = matching_rows.iloc[0]["main_energy"]
-
-            analysis_rows.append(energy_values)
+                "Legacy": self.get_main_energy_by_file_suffix(
+                    summary_dataframe,
+                    "_legacy.json",
+                ),
+                "Monolithic": self.get_main_energy_by_file_suffix(
+                    summary_dataframe,
+                    "_monolithic.json",
+                ),
+                "Clustered": self.get_main_energy_by_file_suffix(
+                    summary_dataframe,
+                    "_clustered.json",
+                ),
+                "Cached": self.get_main_energy_by_file_suffix(
+                    summary_dataframe,
+                    "_cache.json",
+                ),
+            })
 
         energy_dataframe = pd.DataFrame(analysis_rows)
 
         energy_dataframe = energy_dataframe[
-            ["Program", "Legacy", "Monolithic", "Clustered"]
+            [
+                "Program",
+                "Legacy",
+                "Monolithic",
+                "Clustered",
+                "Cached",
+            ]
         ]
 
         minimum_row = {
@@ -111,6 +148,15 @@ class AnalysisResultTable:
             "Legacy": energy_dataframe["Legacy"].min(),
             "Monolithic": energy_dataframe["Monolithic"].min(),
             "Clustered": energy_dataframe["Clustered"].min(),
+            "Cached": energy_dataframe["Cached"].min(),
+        }
+
+        median_row = {
+            "Program": "Median",
+            "Legacy": energy_dataframe["Legacy"].median(),
+            "Monolithic": energy_dataframe["Monolithic"].median(),
+            "Clustered": energy_dataframe["Clustered"].median(),
+            "Cached": energy_dataframe["Cached"].median(),
         }
 
         maximum_row = {
@@ -118,12 +164,19 @@ class AnalysisResultTable:
             "Legacy": energy_dataframe["Legacy"].max(),
             "Monolithic": energy_dataframe["Monolithic"].max(),
             "Clustered": energy_dataframe["Clustered"].max(),
+            "Cached": energy_dataframe["Cached"].max(),
         }
 
         energy_dataframe = pd.concat(
             [
                 energy_dataframe,
-                pd.DataFrame([minimum_row, maximum_row]),
+                pd.DataFrame(
+                    [
+                        minimum_row,
+                        median_row,
+                        maximum_row,
+                    ]
+                ),
             ],
             ignore_index=True,
         )
@@ -140,4 +193,3 @@ class AnalysisResultTable:
 
         print(f"Saved CSV to {output_csv_path}")
         print(f"Saved LaTeX table to {output_tex_path}")
-
