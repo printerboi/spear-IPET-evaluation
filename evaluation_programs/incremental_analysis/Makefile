@@ -22,7 +22,7 @@ LIBSODIUM_INCLUDES := \
 	-I$(LIBSODIUM_SRC_DIR) \
 	-I$(LIBSODIUM_SRC_DIR)/src/libsodium
 
-EXAMPLE_BUILD_DIR := incremental_examples
+EXAMPLE_BUILD_DIR := .build
 
 EXAMPLE_NAMES := baseline v1 v2 v3
 
@@ -46,13 +46,14 @@ libsodium:
 
 incremental_examples: libsodium $(EXAMPLE_BINARIES) $(EXAMPLE_LL_FILES)
 
-$(EXAMPLE_BUILD_DIR):
+$(EXAMPLE_BUILD_DIR)/.dir:
 	mkdir -p "$(EXAMPLE_BUILD_DIR)"
+	touch "$@"
 
-$(EXAMPLE_BUILD_DIR)/%.bc: %.cpp | $(EXAMPLE_BUILD_DIR)
+$(EXAMPLE_BUILD_DIR)/%.bc: %.cpp | $(EXAMPLE_BUILD_DIR)/.dir
 	$(CLANGXX) -g -O0 -Xclang -disable-O0-optnone -fno-discard-value-names -emit-llvm -c "$<" $(LIBSODIUM_INCLUDES) -o "$@"
 
-$(EXAMPLE_BUILD_DIR)/%_combined_full.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LIBSODIUM_BUILD_DIR)/libsodium.bc | $(EXAMPLE_BUILD_DIR)
+$(EXAMPLE_BUILD_DIR)/%_combined_full.bc: $(EXAMPLE_BUILD_DIR)/%.bc $(LIBSODIUM_BUILD_DIR)/libsodium.bc | $(EXAMPLE_BUILD_DIR)/.dir
 	$(LLVM_LINK) $^ -o "$@"
 
 $(EXAMPLE_BUILD_DIR)/%_combined.bc: $(EXAMPLE_BUILD_DIR)/%_combined_full.bc

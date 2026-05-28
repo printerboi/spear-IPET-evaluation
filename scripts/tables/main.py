@@ -10,6 +10,7 @@ from tables.generators.measurements_per_device import MeasurementPerDeviceTable
 from tables.generators.median_profiles import MedianProfileInstructionEnergyTable
 from tables.generators.program_offsets_per_device import ProgramOffsetPerDeviceTable
 from tables.generators.median_profiles_chart import MedianProfileChart
+from tables.generators.incremental_results import IncrementalRuntimeTable
 
 from tables.util.Utility import create_result_dir
 
@@ -27,6 +28,7 @@ def main():
     MedianProfileInstructionEnergyTable().generate()
     ProgramOffsetPerDeviceTable().generate()
     MedianProfileChart().generate()
+    IncrementalRuntimeTable().generate()
 
 if __name__ == "__main__":
     main()

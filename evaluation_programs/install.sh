@@ -134,4 +134,8 @@ if [ "$SKIPBUILD" = false ]; then
     echo "(6/X) Building Coreutils"
     cd coreutils && make coreutils
     cd ..
+
+    echo "(7/X) Building incremental"
+    cd incremental_analysis && make incremental_examples
+    cd ..
 fi

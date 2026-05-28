@@ -3,8 +3,15 @@ import subprocess
 import json
 import os
 from pathlib import Path
-from analysisexecuter.Util import _find_all_llfiles, _aggregate_function_rows, _aggregate_summary_rows, _get_filename_without_extension
+
 import pandas as pd
+
+from incrementalexecuter.Util import (
+    _find_all_llfiles,
+    _aggregate_function_rows,
+    _aggregate_summary_rows,
+    _get_filename_without_extension,
+)
 
 
 # Paths
@@ -13,12 +20,12 @@ DATA_DIR = PROJECT_ROOT / "data"
 CONFIG_PATH_WITHOUT_CACHE = PROJECT_ROOT / "config" / "config.json"
 CONFIG_PATH_WITH_CACHE = PROJECT_ROOT / "config" / "config_cache.json"
 PROFILE_PATH = PROJECT_ROOT / "config" / "profile.json"
-PROGRAM_PATH = PROJECT_ROOT / "evaluation_programs"
+PROGRAM_PATH = PROJECT_ROOT / "evaluation_programs" / "incremental_analysis" / ".build"
 TMP_PATH_STR = "/tmp/spear"
 CLUSTER_CACHE_PATH = Path(__file__).resolve().parents[1] / "cluster_cache.json"
 
 # Constants
-REPETITIONS=25
+REPETITIONS = 25
 
 
 class Executer:
@@ -39,39 +46,28 @@ class Executer:
         """
         Run the evaluation process
         """
-        self.log("Starting analysis evaluation.")
+        self.log("Starting incremental analysis evaluation.")
 
         # Define the output paths and create them if possible
-        output_base_path = DATA_DIR / self.device_name / "analysis" / "raw"
-        output_csv_path = DATA_DIR / self.device_name / "analysis"
+        output_base_path = DATA_DIR / self.device_name / "incremental" / "raw"
+        output_csv_path = DATA_DIR / self.device_name / "incremental"
 
         output_base_path.mkdir(parents=True, exist_ok=True)
         output_csv_path.mkdir(parents=True, exist_ok=True)
 
-        # Search for the .ll files in the folder where we are expecting the evaluation program files
-        all_programs = _find_all_llfiles(PROGRAM_PATH)
-
-        # Exclude all programs inside directories named "incremental"
-        programs = [
-            program_path
-            for program_path in all_programs
-            if "incremental" not in program_path.parts
-        ]
+        # Search for the .ll files in the folder where we are expecting the incremental evaluation program files
+        programs = _find_all_llfiles(PROGRAM_PATH)
 
         print("Found programs: [")
         for program_path in programs:
-            # Run the analysis for the found program
             print(f"\t{program_path}")
-
         print("]")
 
         for program_path in programs:
-            # Run the analysis for the found program
             self._run_benchmark(program_path)
 
         print(CLUSTER_CACHE_PATH)
         self._remove_cluster_cache()
-
 
     def _run_benchmark(self, program: Path):
         """
@@ -89,7 +85,8 @@ class Executer:
         cached_function_runs = []
 
         self.log(f"Running uncached benchmark for {filename}")
-        # Deleta a cache file if one already exists
+
+        # Delete a cache file if one already exists
         self._remove_cluster_cache()
 
         # Repeat the uncached analysis multiple times
@@ -113,17 +110,19 @@ class Executer:
         """
         self.log(f"Running cache warm-up for {filename}")
         self._remove_cluster_cache()
+
         # Execute cached variant once
         self._spear_runner(program, CONFIG_PATH_WITH_CACHE)
-        
+
         # Execute cached variant multiple times with warm cache
         self.log(f"Running warm cached benchmark for {filename}")
         for repetition_index in range(REPETITIONS):
             self.log(f"Cached repetition {repetition_index + 1}/{REPETITIONS}")
+
             # Execute spear
             self._spear_runner(program, CONFIG_PATH_WITH_CACHE)
 
-            # Collect recorded resultsw
+            # Collect recorded results
             summary_row, function_rows = self._collect_cached_run_results(filename, repetition_index)
 
             # Append results to our lists
@@ -136,11 +135,11 @@ class Executer:
             uncached_summary_runs=uncached_summary_runs,
             uncached_function_runs=uncached_function_runs,
             cached_summary_runs=cached_summary_runs,
-            cached_function_runs=cached_function_runs
+            cached_function_runs=cached_function_runs,
         )
 
         # Define the path where we will store the generated csv file
-        output_csv_path = DATA_DIR / self.device_name / "analysis"
+        output_csv_path = DATA_DIR / self.device_name / "incremental"
         output_csv_path.mkdir(parents=True, exist_ok=True)
 
         # Convert the data to dataframes
@@ -165,14 +164,17 @@ class Executer:
             [
                 "spear",
                 "analyze",
-                "--profile", str(PROFILE_PATH),
-                "--config", str(config),
-                "--program", str(program)
+                "--profile",
+                str(PROFILE_PATH),
+                "--config",
+                str(config),
+                "--program",
+                str(program),
             ],
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             text=True,
-            bufsize=1
+            bufsize=1,
         )
 
         # Print the output
@@ -189,7 +191,7 @@ class Executer:
 
     def _collect_uncached_run_results(self, filename: str, iteration_number: int):
         """
-        Collect the recorded data from the uncached analysis for the given filename under the 
+        Collect the recorded data from the uncached analysis for the given filename under the
         given iteration_number
         """
 
@@ -197,7 +199,7 @@ class Executer:
         tmp_path = Path(TMP_PATH_STR)
 
         # Define the path where we want to store the results
-        output_base_path = DATA_DIR / self.device_name / "analysis" / "raw"
+        output_base_path = DATA_DIR / self.device_name / "incremental" / "raw"
         output_base_path.mkdir(parents=True, exist_ok=True)
 
         # Define the paths of each analysis type
@@ -234,16 +236,18 @@ class Executer:
 
     def _collect_cached_run_results(self, filename: str, iteration_number: int):
         """
-        Collect the recorded data from the cached analysis for the given filename under the 
+        Collect the recorded data from the cached analysis for the given filename under the
         given iteration_number
         """
+
         # TMP path where the analysis result is initially stored
         tmp_path = Path(TMP_PATH_STR)
+
         # Filename found in the tmp dir
         cache_tmp_path = tmp_path / f"{filename}.json"
 
         # /raw dir, where we want to store the result
-        output_base_path = DATA_DIR / self.device_name / "analysis" / "raw"
+        output_base_path = DATA_DIR / self.device_name / "incremental" / "raw"
         output_base_path.mkdir(parents=True, exist_ok=True)
 
         # Build destination path
@@ -254,6 +258,7 @@ class Executer:
 
         # Parse from the moved file
         summary_row, function_rows = self.parse_analysis_file(destination_path)
+
         # Set the analysis key
         summary_row["analysis_key"] = "cache"
 
@@ -262,12 +267,19 @@ class Executer:
 
         return summary_row, function_rows
 
-    def _aggregate_results(self, filename: str, uncached_summary_runs: list, uncached_function_runs: list, cached_summary_runs: list, cached_function_runs: list):
+    def _aggregate_results(
+        self,
+        filename: str,
+        uncached_summary_runs: list,
+        uncached_function_runs: list,
+        cached_summary_runs: list,
+        cached_function_runs: list,
+    ):
         """
         Summarize the results for one given program with the given recorded results.
         Creates the datastructure we want to store in a .csv file later
         """
-        
+
         # Groups we are summarizing on
         summary_groups = {
             "legacy": [],
@@ -276,7 +288,7 @@ class Executer:
             "cache": [],
         }
 
-        # Function aggregation obect
+        # Function aggregation object
         function_groups = {
             "legacy": [],
             "clustered": [],
@@ -298,7 +310,7 @@ class Executer:
         for summary_row in cached_summary_runs:
             summary_groups["cache"].append(summary_row)
 
-        # Store the cached results for functions 
+        # Store the cached results for functions
         for repetition_function_rows in cached_function_runs:
             for function_row in repetition_function_rows:
                 function_groups["cache"].append(function_row)
@@ -326,7 +338,6 @@ class Executer:
 
         return aggregated_summary_rows, aggregated_function_rows
 
-
     def parse_analysis_file(self, file_path: Path):
         """
         Parse a given analysis result found under the given path
@@ -336,7 +347,7 @@ class Executer:
         with open(file_path, "r", encoding="utf-8") as json_file:
             # Load the json data
             json_data = json.load(json_file)
-        
+
         # Extract top-level information
         analysis_name = json_data.get("analysis", Path(file_path).stem)
         duration = json_data.get("duration", None)
@@ -346,7 +357,7 @@ class Executer:
             "file": os.path.basename(file_path),
             "analysis": analysis_name,
             "duration": duration,
-            "main_energy": functions["main"]["energy"]
+            "main_energy": functions["main"]["energy"],
         }
 
         # Extract information about the functions
@@ -358,17 +369,19 @@ class Executer:
             total_variables = sum(ilp_entry.get("numVariables", 0) for ilp_entry in ilp_entries)
 
             # Append the information about the function
-            function_rows.append({
-                "file": os.path.basename(file_path),
-                "analysis": analysis_name,
-                "duration": duration,
-                "function_name": function_name,
-                "energy": function_data.get("energy", 0.0),
-                "num_nodes": len(function_data.get("nodes", [])),
-                "num_ilps": len(ilp_entries),
-                "total_constraints": total_constraints,
-                "total_variables": total_variables,
-            })
+            function_rows.append(
+                {
+                    "file": os.path.basename(file_path),
+                    "analysis": analysis_name,
+                    "duration": duration,
+                    "function_name": function_name,
+                    "energy": function_data.get("energy", 0.0),
+                    "num_nodes": len(function_data.get("nodes", [])),
+                    "num_ilps": len(ilp_entries),
+                    "total_constraints": total_constraints,
+                    "total_variables": total_variables,
+                }
+            )
 
         return summary_row, function_rows
 
@@ -386,4 +399,3 @@ class Executer:
         current_time = datetime.now().strftime("%H:%M:%S")
         toprint = "[{current_time}] {msg}".format(current_time=current_time, msg=msg)
         print(toprint)
-
