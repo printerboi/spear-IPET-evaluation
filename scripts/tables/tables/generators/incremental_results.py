@@ -6,6 +6,7 @@ from tables.util.Utility import (
     format_decimal,
     format_milliseconds,
     get_result_dir,
+    format_program_name
 )
 
 
@@ -14,16 +15,15 @@ class IncrementalRuntimeTable:
     result_directory = get_result_dir()
 
     scenario_order = [
-        ("baseline", "Baseline", "None", "No"),
-        ("v1", "V1", "Outside validation loop", "No"),
-        ("v2", "V2", "Validation loop body", "Yes"),
-        ("v3", "V3", "Validation loop structure", "Yes"),
+        ("baseline", "baseline", "No"),
+        ("v1", "v1", "No"),
+        ("v2", "v2", "Yes"),
+        ("v3", "v3", "Yes"),
     ]
 
     def create_latex_row(self, row: pd.Series) -> str:
         values = [
-            str(row["Scenario"]),
-            str(row["Changed region"]),
+            format_program_name(str(row["Scenario"])),
             str(row["Loop modified"]),
             format_milliseconds(row["Monolithic"]),
             format_milliseconds(row["Cached"]),
@@ -35,7 +35,6 @@ class IncrementalRuntimeTable:
     def create_table(self, dataframe: pd.DataFrame) -> str:
         column_format = (
             "@{}l"
-            "l"
             "l"
             "S[table-format=4.3]"
             "S[table-format=4.3]"
@@ -49,8 +48,7 @@ class IncrementalRuntimeTable:
         \label{{tab:incremental_runtime}} \\
 
         \toprule
-        Scenario &
-        Changed region &
+        Program &
         Loop modified &
         \multicolumn{{1}}{{c}}{{Monolithic}} &
         \multicolumn{{1}}{{c}}{{Cached}} &
@@ -60,7 +58,6 @@ class IncrementalRuntimeTable:
 
         \toprule
         Scenario &
-        Changed region &
         Loop modified &
         \multicolumn{{1}}{{c}}{{Monolithic}} &
         \multicolumn{{1}}{{c}}{{Cached}} &
@@ -69,11 +66,13 @@ class IncrementalRuntimeTable:
         \endhead
 
         \midrule
-        \multicolumn{{6}}{{r}}{{Continued on next page}} \\
+        \multicolumn{{5}}{{r}}{{Continued on next page}} \\
         \endfoot
 
         \bottomrule
-        \caption{{Incremental reanalysis runtime for the \texttt{{keyExchange}} program after localized changes. Runtime values are given in milliseconds.}}
+        \caption{{Incremental analysis runtime for the \texttt{{keyExchange}}
+        program after localized changes on device D1. Runtime values are given in
+        milliseconds.}}
         \endlastfoot
 
         {table_rows}
@@ -93,16 +92,22 @@ class IncrementalRuntimeTable:
         if matching_rows.empty:
             return None
 
-        return matching_rows.iloc[0]["duration"]
+        # Convert runtime from us to ms
+        return matching_rows.iloc[0]["duration"] / 1000.0
 
     def generate(self):
         runtime_rows = []
 
-        for program_name, scenario_name, changed_region, loop_modified in self.scenario_order:
-            summary_csv_path = self.incremental_directory / f"{program_name}_analysis_summary.csv"
+        for program_name, scenario_name, loop_modified in self.scenario_order:
+            summary_csv_path = (
+                self.incremental_directory /
+                f"{program_name}_analysis_summary.csv"
+            )
 
             if not summary_csv_path.exists():
-                raise FileNotFoundError(f"Missing summary file: {summary_csv_path}")
+                raise FileNotFoundError(
+                    f"Missing summary file: {summary_csv_path}"
+                )
 
             summary_dataframe = pd.read_csv(summary_csv_path)
 
@@ -124,7 +129,6 @@ class IncrementalRuntimeTable:
 
             runtime_rows.append({
                 "Scenario": scenario_name,
-                "Changed region": changed_region,
                 "Loop modified": loop_modified,
                 "Monolithic": monolithic_runtime,
                 "Cached": cached_runtime,
@@ -133,12 +137,16 @@ class IncrementalRuntimeTable:
 
         runtime_dataframe = pd.DataFrame(runtime_rows)
 
-        output_csv_path = self.result_directory / "incremental_runtime.csv"
+        output_csv_path = (
+            self.result_directory / "incremental_runtime.csv"
+        )
         runtime_dataframe.to_csv(output_csv_path, index=False)
 
         latex_table = self.create_table(runtime_dataframe)
 
-        output_tex_path = self.result_directory / "incremental_runtime.tex"
+        output_tex_path = (
+            self.result_directory / "incremental_runtime.tex"
+        )
 
         with open(output_tex_path, "w", encoding="utf-8") as file:
             file.write(latex_table)

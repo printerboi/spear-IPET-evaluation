@@ -18,6 +18,9 @@ def get_result_dir():
 
 
 def format_scientific(value: float) -> str:
+    if pd.isna(value):
+        return "\multicolumn{1}{c}{--}"
+    
     return f"{value:.3e}"
 
 
