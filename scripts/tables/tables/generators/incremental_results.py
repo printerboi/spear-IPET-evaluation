@@ -10,7 +10,7 @@ from tables.util.Utility import (
 
 
 class IncrementalRuntimeTable:
-    incremental_directory = Path("../../data/dummy/incremental")
+    incremental_directory = Path("../../data/device01/incremental")
     result_directory = get_result_dir()
 
     scenario_order = [
