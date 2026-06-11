@@ -1,10 +1,9 @@
 # SPEAR-IPET-evaluation
 
-Welcome to the SPEAR-IPET evaluation repository. This repository contains all
-programs and data required for the evaluation conducted as part of the master’s
-thesis "*Hierarchical Worst-Case Energy Analysis Using Clustered Implicit Path
-Enumeration with Data-Flow-Driven Path Refinement and Experimentally Derived
-Energy Models*".
+This repository contains all programs and data required for the evaluation
+conducted as part of the master’s thesis "*Hierarchical Worst-Case Energy
+Analysis Using Clustered Implicit Path Enumeration with Data-Flow-Driven Path
+Refinement and Experimentally Derived Energy Models*".
 
 ## Structure
 
@@ -76,12 +75,12 @@ Create a new device entry for your evaluation machine:
     is_pipeline: false
     skip_phasar: false
 ```
-Fill in `<device_name>` with a meaningfull unqique identitfier. Add `<user>` as the user you previously copied the ssh key to.
+Fill in `<device_name>` with a meaningful unique identifier. Add `<user>` as the user you previously copied the ssh key to.
 Supply the ip or hostname `<ip>` the evaluation device will be reachable on.
 
 5) **Deploy the playbook**
 
-In order to deploy the ansible playbook, we created a custom deploy script. Call it with the unique identifier of you evaluation machine and the deployment should start:
+In order to deploy the ansible playbook, we created a custom deploy script. Call it with the unique identifier of your evaluation machine and the deployment should start:
 
 ```
 ./deploy <device_name>
@@ -151,13 +150,13 @@ method) are provided. Additionally, the file `<program name>_analysis_summary`
 provides a summary of energy calculated for the `main` function of the program
 for each analysis method.
 
-The script `incrementalexecuter` is a adapted version of the `analysisexecutor`.
+The script `incrementalexecuter` is an adapted version of the `analysisexecuter`.
 Execute it in the same way to generate the analysis result for the incremental
 programs. The results are then found in `/opt/sselabs/data/<Name of the eval device>/incremental`.
 
 ### Running the RAPL Measurement
 
-The analysis can be evaluated using the script `groundtruthmeasurements`.
+The measurements can be evaluated using the script `groundtruthmeasurements`.
 Navigate into the subfolder:
 ```
 cd scripts/groundtruthmeasurements
