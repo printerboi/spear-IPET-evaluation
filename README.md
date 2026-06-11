@@ -1,6 +1,10 @@
 # SPEAR-IPET-evaluation
 
-Welcome to the SPEAR-IPET evaluation repository. This repository contains all programs and data required for the evaluation conducted as part of the master’s thesis "*...*".
+Welcome to the SPEAR-IPET evaluation repository. This repository contains all
+programs and data required for the evaluation conducted as part of the master’s
+thesis "*Hierarchical Worst-Case Energy Analysis Using Clustered Implicit Path
+Enumeration with Data-Flow-Driven Path Refinement and Experimentally Derived
+Energy Models*".
 
 ## Structure
 
@@ -11,25 +15,31 @@ project-root/
 │
 ├── ansible/                # Ansible playbooks for setting up a new evaluation device
 │
-├── data/                   # Experimental data collected during evaluation runs
+├── assets/                 # Repository assets
+│
+├── data/                   # Experimental data collected during our evaluation runs
 │
 ├── evaluation_programs/    # Programs used to perform the evaluation
 │
-└── scripts/                # Scripts for automation (e.g., visualization, data aggregation)
+└── scripts/                # Scripts for automation (e.g., visualization, data aggregation, table generation)
 ```
 
 ## Hardware recommendations
 
-While SPEAR and the evaluation is in general device agnostic, we designed our deployment in this repository specifically for **Ubuntu 24.04**. If you want to use SPEAR and the evaluation on another linux based distribution, please refer for the manual installation of [SPEAR](#)
+While SPEAR and the evaluation is in general device agnostic, we designed our
+deployment in this repository specifically for **Ubuntu 24.04**. If you want to
+use SPEAR and the evaluation on another Linux based distribution, please refer
+for the manual installation of [SPEAR](https://github.com/sse-labs/spear). We
+used the release [v0.3.1](https://github.com/sse-labs/spear/releases/tag/v0.3.1) from the SPEAR repository
 
 ## Setting up a device
 
 We added an ansible playbook to make the evaluation more streamlined and in order to reduce setup overhead.
-To guarantee the easy setup of a device use the following steps. Moving on we use the term "host machine" for the device you are currently working on that will execute the ansible playbook on another device. The other device is called the "evaluation machine".
+To guarantee the easy setup of a device use the following steps. Moving on we use the term "host machine" for the device you are currently working on that will execute the Ansible playbook on another device. The other device is called the "evaluation machine".
 
 1) **Install Ansible**
 
-Make sure you have ansible installed on your host machine. If it is not installed, use your favourite package manager to get the dependency.
+Make sure you have Ansible installed on your host machine. If it is not installed, use your favorite package manager to get the dependency.
 
 2) **OpenSSH Server**
 
@@ -83,7 +93,7 @@ Expect the deployment to take some time depending on the hardware setup you are 
 
 Our evaluation is split into two parts. The whole process is described by the following diagram:
 
-![](assets/SPEAR_evaluation.jpg)
+![](assets/evalconcept.svg)
 
 In order to run the evaluation, we prepared multiple evaluation scripts using python.
 
@@ -137,7 +147,13 @@ Choose a meaningful and unique name for `<Name of the eval device>`. The name wi
 After the evaluation is done, the results can be found in `/opt/sselabs/data/<Name of the eval device>/analysis`. The analysis folder contains the recorded values in the folder `raw`.
 Comprehensive tables are provided as `.csv` format for each program under analysis. `<program name>_analysis_functions.csv` provides an overview over all analyzed functions.
 For each analysis method `legacy`, `clustered`, `monolithic` and `clustered cached`, the analyzed energy value as well as information about the ILPs (if used by the
-method) are provided. Additionally, the file `<program name>_analysis_summary` provides a summary of energy calculated for the `main` function of the program for each analysis method.
+method) are provided. Additionally, the file `<program name>_analysis_summary`
+provides a summary of energy calculated for the `main` function of the program
+for each analysis method.
+
+The script `incrementalexecuter` is a adapted version of the `analysisexecutor`.
+Execute it in the same way to generate the analysis result for the incremental
+programs. The results are then found in `/opt/sselabs/data/<Name of the eval device>/incremental`.
 
 ### Running the RAPL Measurement
 
@@ -167,8 +183,55 @@ execution durations of the measurement. The file `statistics.csv` stores a summa
 
 ## Collecting Data
 
-In order to collect data, make sure the needed tools are installed. Use the provided ansible script to simplify the installation process. For each device that should be evaluated
+In order to collect data, make sure the needed tools are installed. Use the provided Ansible script to simplify the installation process. For each device that should be evaluated
 create a unique identifier that will be used to store the results. Make sure the evaluation device runs a clean OS-Install with no other programs than stock Ubuntu 24.04 and the 
-software provided by this evaluation.
+software provided by this evaluation. On the device execute the aforementioned
+analysis tools in their respective directory. Make sure to limit the interaction
+with the test system to as little as possible. Especially mitigate usage of
+the mouse and keyboard. Make sure no docker containers run in the background.
 
 ## Our collected data
+
+During our experiments we collected around 5GB of data, which are stored inside
+this repository using git LFS. In order to download the data make sure that
+git LFS is installed:
+```
+git lfs install
+```
+
+Clone the repository as usual:
+```
+git clone https://github.com/printerboi/spear-IPET-evaluation.git
+```
+
+Pull the LFS data:
+```
+git lfs pull
+```
+
+The data is split into 5 evaluation devices. The specs of the devices can be
+seen in the following table:
+
+| ID | CPU | Platform | TDP | RAPL Unit | RAM | External GPU |
+|---|---|---|---|---|---|---|
+| D1 | Intel i5-11400F | Desktop | 65W | $6.103515625 \cdot 10^{-5}$ | 16GB | Yes |
+| D2 | Intel i5-6500T | Desktop | 35W | $6.103515625 \cdot 10^{-5}$ | 16GB | No |
+| D3 | Intel i7-1355U | Laptop | 55W | $6.103515625 \cdot 10^{-5}$ | 16GB | No |
+| D4 | AMD Ryzen 5 3400G | Desktop | 65W | $1.52587890625 \cdot 10^{-5}$ | 16GB | No |
+| D5 | AMD Ryzen 9 7900 | Desktop | 65W | $1.52587890625 \cdot 10^{-5}$ | 32GB | No |
+
+Each device folder contains a set of subfolders:
+
+```
+│
+├── analysis/                # Results of the analysis evaluation
+│
+├── measurements/            # Collected measurements
+│
+└── profile/                 # Collected profiles
+```
+Additionally, `device01` contains the result of the incremental analysis, which
+was only performed for the respective device.
+
+Each of the subfolders contains the raw results collected during the evaluation
+as well as the aggregated files generated by the python evaluation scripts.
