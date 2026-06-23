@@ -29,7 +29,7 @@ While SPEAR and the evaluation is in general device agnostic, we designed our
 deployment in this repository specifically for **Ubuntu 24.04**. If you want to
 use SPEAR and the evaluation on another Linux based distribution, please refer
 for the manual installation of [SPEAR](https://github.com/sse-labs/spear). We
-used the release [v0.3.1](https://github.com/sse-labs/spear/releases/tag/v0.3.1) from the SPEAR repository
+used the release [v0.3.0](https://github.com/sse-labs/spear/releases/tag/v0.3.0) from the SPEAR repository
 
 ## Setting up a device
 
