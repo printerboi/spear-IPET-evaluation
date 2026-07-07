@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tables.util.Programs import get_selected_programs
+from tables.util.Programs import get_selected_programs, get_id
 from tables.util.Utility import (
     calculate_magnitude_difference,
     format_program_name,
@@ -114,7 +114,9 @@ class AnalysisComparisonTable:
     def generate_dataframe(self) -> pd.DataFrame:
         comparison_rows = []
 
-        for program_index, program_name in enumerate(self.program_names):
+        for program_name in sorted(self.program_names):
+            program_index = get_id(program_name)
+
             measurement = self.read_measurement_energy(program_index)
             legacy = self.read_analysis_energy(program_name, "legacy")
             clustered = self.read_analysis_energy(program_name, "clustered")
@@ -150,6 +152,7 @@ class AnalysisComparisonTable:
         return self.add_summary_rows(comparison_dataframe)
 
     def generate_table(self, dataframe: pd.DataFrame) -> str:
+
         column_format = (
             "@{}l"
             "S[table-format=1.3e-2]"

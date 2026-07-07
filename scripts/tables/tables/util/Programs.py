@@ -35,5 +35,8 @@ program_names = [
     "tail",
 ]
 
+def get_id(program_name: str) -> int:
+    return program_names.index(program_name)
+
 def get_selected_programs():
     return program_names

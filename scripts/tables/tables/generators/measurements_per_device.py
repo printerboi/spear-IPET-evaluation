@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from tables.util.Programs import program_names
+from tables.util.Programs import program_names, get_id
 from tables.util.Utility import format_scientific, get_result_dir
 
 
@@ -119,7 +119,9 @@ Program &
     def create_measurement_dataframe(self) -> pd.DataFrame:
         measurement_rows = []
 
-        for program_index, program_name in enumerate(program_names):
+        for program_name in sorted(program_names):
+            program_index = get_id(program_name)
+
             measurement_row = {
                 "Program": program_name,
             }
